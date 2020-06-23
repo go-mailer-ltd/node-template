@@ -1,0 +1,16 @@
+[2020-06-22T21:33:10.512Z : [31merror[39m] - [SampleService] read_by_filter Error: Error
+[2020-06-22T21:36:29.016Z : [31merror[39m] - [SampleService] read_by_filter Error: Error
+[2020-06-22T21:37:30.287Z : [31merror[39m] - Resource not found
+[2020-06-22T22:01:03.386Z : [31merror[39m] - Resource not found
+[2020-06-22T22:01:24.156Z : [31merror[39m] - Resource not found
+[2020-06-22T22:01:43.586Z : [31merror[39m] - Resource not found
+[2020-06-22T22:34:42.474Z : [31merror[39m] - [SampleService] read_by_filter: Cannot read property 'handle_database_read' of undefined
+[2020-06-22T22:34:44.329Z : [31merror[39m] - [SampleService] read_by_filter: Cannot read property 'handle_database_read' of undefined
+[2020-06-22T22:35:51.263Z : [31merror[39m] - [SampleService] read_by_filter: Cannot read property 'handle_database_read' of undefined
+[2020-06-22T22:38:05.395Z : [31merror[39m] - [SampleService] read_by_filter: Cannot read property 'handle_database_read' of undefined
+[2020-06-22T22:42:40.460Z : [31merror[39m] - [SampleService] read_by_filter: Cannot read property 'sample_controller' of undefined
+[2020-06-22T22:50:12.422Z : [31merror[39m] - Resource not found
+[2020-06-22T22:52:16.093Z : [31merror[39m] - [SampleService] read_by_wildcard: build_return_fields_string is not defined
+[2020-06-22T22:55:37.042Z : [31merror[39m] - [SampleService] read_by_wildcard: console.loog is not a function
+[2020-06-22T23:51:28.943Z : [31merror[39m] - [SampleService] read_records_by_wildcard: SharedService is not defined
+[2020-06-23T00:17:20.101Z : [31merror[39m] - undefined

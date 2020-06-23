@@ -1,0 +1,2 @@
+[Tue, 23 Jun 2020 00:57:01 GMT ::ffff:127.0.0.1 - ] GET /samples?id=70- HTTP/1.1 | 200 39.151
+[Tue, 23 Jun 2020 00:57:06 GMT ::ffff:127.0.0.1 - ] GET /samples?id=70- HTTP/1.1 | 200 18.000
