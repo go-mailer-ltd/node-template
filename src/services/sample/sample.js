@@ -3,7 +3,10 @@
 **/
 //
 const RootService = require('../root');
+const Observabble = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
+const SampleSchema = require('../../schemas/sample');
+
 
 const {
     process_failed_response
@@ -27,15 +30,22 @@ class SampleService extends RootService {
 
     async create_record(request, next) {
         try {
+            const { body } = request;
+            const { error } = SampleSchema.validate(body);
 
+            if (error) throw new Error(error);
+
+            const result = await this.sample_controller.create_record({ ...body });
+            return this.process_single_read(result);
         } catch (e) {
-            const err =process_failed_response(`[SampleService] created_record: ${e.message}`, 500);
+            const err = process_failed_response(`[SampleService] created_record: ${e.message}`, 500);
             next(err);
         }
     }
 
     async read_record_by_id(request, next) {
         try {
+            Observabble.emit('new', { name: 'new' });
             const { id } = request.params;
             if (!id) return next(process_failed_response(`Invalid ID supplied.`));
 

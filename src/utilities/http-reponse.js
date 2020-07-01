@@ -20,11 +20,4 @@ module.exports = {
             success: true,
         }
     },
-
-    process_response( request, response, next ) {
-        if(!request.payload) return next();
-        
-        const { status_code } = request.payload;
-        return response.status( status_code ).json(request.payload)
-    },
 }

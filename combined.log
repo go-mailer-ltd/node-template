@@ -14,3 +14,12 @@
 [2020-06-22T22:55:37.042Z : [31merror[39m] - [SampleService] read_by_wildcard: console.loog is not a function
 [2020-06-22T23:51:28.943Z : [31merror[39m] - [SampleService] read_records_by_wildcard: SharedService is not defined
 [2020-06-23T00:17:20.101Z : [31merror[39m] - undefined
+[2020-06-24T22:35:57.875Z : [31merror[39m] - [SampleService] update_record_by_id: Cannot read property 'test_two' of undefined
+[2020-06-24T22:36:47.032Z : [31merror[39m] - [SampleService] update_record_by_id: Cannot read property 'test_two' of undefined
+[2020-06-24T22:37:29.645Z : [31merror[39m] - [SampleService] update_record_by_id: Cannot read property 'test_two' of undefined
+[2020-06-24T22:37:38.521Z : [31merror[39m] - [SampleService] update_record_by_id: test_two is not defined
+[2020-06-24T22:38:47.122Z : [31merror[39m] - [SampleService] update_record_by_id: Cannot read property 'test_two' of undefined
+[2020-06-24T22:40:44.667Z : [31merror[39m] - [SampleService] update_record_by_id: Cannot read property 'test_two' of undefined
+[2020-06-24T22:40:58.896Z : [31merror[39m] - [SampleService] update_record_by_id: handler is not a function
+[2020-06-24T22:42:07.350Z : [31merror[39m] - [SampleService] update_record_by_id: handler is not a function
+[2020-07-01T00:29:17.688Z : [31merror[39m] - Resource not found
