@@ -1294,3 +1294,55 @@ ReferenceError: handler is not defined
     at Function.Module._load (internal/modules/cjs/loader.js:929:14)
     at Module.require (internal/modules/cjs/loader.js:1080:19)
     at require (internal/modules/cjs/helpers.js:72:18)
+[2020-07-01T01:08:15.467Z : [31merror[39m] - uncaughtException: Cannot find module '../utilities/http-reponse'
+Require stack:
+- /home/nathan/Apps/node-template/src/services/root.js
+- /home/nathan/Apps/node-template/src/services/sample/sample.js
+- /home/nathan/Apps/node-template/src/routes/sample.js
+- /home/nathan/Apps/node-template/src/routes/config.js
+- /home/nathan/Apps/node-template/index.js
+Error: Cannot find module '../utilities/http-reponse'
+Require stack:
+- /home/nathan/Apps/node-template/src/services/root.js
+- /home/nathan/Apps/node-template/src/services/sample/sample.js
+- /home/nathan/Apps/node-template/src/routes/sample.js
+- /home/nathan/Apps/node-template/src/routes/config.js
+- /home/nathan/Apps/node-template/index.js
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:1020:15)
+    at Function.Module._load (internal/modules/cjs/loader.js:890:27)
+    at Module.require (internal/modules/cjs/loader.js:1080:19)
+    at require (internal/modules/cjs/helpers.js:72:18)
+    at Object.<anonymous> (/home/nathan/Apps/node-template/src/services/root.js:6:66)
+    at Module._compile (internal/modules/cjs/loader.js:1176:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
+    at Module.load (internal/modules/cjs/loader.js:1040:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
+    at Module.require (internal/modules/cjs/loader.js:1080:19)
+    at require (internal/modules/cjs/helpers.js:72:18)
+    at Object.<anonymous> (/home/nathan/Apps/node-template/src/services/sample/sample.js:5:21)
+    at Module._compile (internal/modules/cjs/loader.js:1176:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
+    at Module.load (internal/modules/cjs/loader.js:1040:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
+[2020-07-01T01:08:54.576Z : [31merror[39m] - uncaughtException: Unexpected token '.'
+/home/nathan/Apps/node-template/src/services/root.js:61
+    this.process_failed_response(message, code = 400) {
+        ^
+
+SyntaxError: Unexpected token '.'
+    at Object.compileFunction (vm.js:344:18)
+    at wrapSafe (internal/modules/cjs/loader.js:1106:15)
+    at Module._compile (internal/modules/cjs/loader.js:1140:27)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
+    at Module.load (internal/modules/cjs/loader.js:1040:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
+    at Module.require (internal/modules/cjs/loader.js:1080:19)
+    at require (internal/modules/cjs/helpers.js:72:18)
+    at Object.<anonymous> (/home/nathan/Apps/node-template/src/services/sample/sample.js:5:21)
+    at Module._compile (internal/modules/cjs/loader.js:1176:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:1196:10)
+    at Module.load (internal/modules/cjs/loader.js:1040:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:929:14)
+    at Module.require (internal/modules/cjs/loader.js:1080:19)
+    at require (internal/modules/cjs/helpers.js:72:18)
+    at Object.<anonymous> (/home/nathan/Apps/node-template/src/routes/sample.js:6:24)

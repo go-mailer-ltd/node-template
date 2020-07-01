@@ -9,8 +9,8 @@ const { createWriteStream } = require('fs');
 const { resolve } = require('path');
 
 const morgan = require('morgan');
-const dev_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version | :status :response-time'
-const prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version :referrer - :user-agent | :status :response-time'
+const dev_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version | :status :response-time ms'
+const prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version :referrer - :user-agent | :status :response-time ms'
 const morgan_format = NODE_ENV === 'production' ? prod_format : dev_format;
 
 const request_log_stream = createWriteStream(resolve(__dirname, `../../request.log`), { flags: 'a' });

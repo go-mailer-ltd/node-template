@@ -7,11 +7,6 @@ const Observabble = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../schemas/sample');
 
-
-const {
-    process_failed_response
-} = require('../../utilities/http-reponse');
-
 const {
     build_query,
     build_wildcard_options
@@ -38,7 +33,7 @@ class SampleService extends RootService {
             const result = await this.sample_controller.create_record({ ...body });
             return this.process_single_read(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] created_record: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] created_record: ${e.message}`, 500);
             next(err);
         }
     }
@@ -47,12 +42,12 @@ class SampleService extends RootService {
         try {
             Observabble.emit('new', { name: 'new' });
             const { id } = request.params;
-            if (!id) return next(process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
             const result = await this.sample_controller.read_records({ id });
             return this.process_single_read(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
             return next(err);
         }
     }
@@ -64,7 +59,7 @@ class SampleService extends RootService {
             const result = await this.handle_database_read(this.sample_controller, query);
             return this.process_multiple_read_results(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] read_records_by_filter: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] read_records_by_filter: ${e.message}`, 500);
             next(err);
         }
     }
@@ -74,14 +69,14 @@ class SampleService extends RootService {
             const { params, query } = request;
 
             if (!params.keys || !params.keys) {
-                return next(process_failed_response(`Invalid key/keyword`, 400));
+                return next(this.process_failed_response(`Invalid key/keyword`, 400));
             }
 
             const wildcard_conditions = build_wildcard_options(params.keys, params.keyword);
             const result = await this.handle_database_read(this.sample_controller, query, wildcard_conditions);
             return this.process_multiple_read_results(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] read_records_by_wildcard: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] read_records_by_wildcard: ${e.message}`, 500);
             next(err);
         }
     }
@@ -91,12 +86,12 @@ class SampleService extends RootService {
             const { id } = request.params;
             const data = request.body;
 
-            if (!id) return next(process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
             const result = await this.sample_controller.update_records({ id }, { ...data });
             return this.process_update_result(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
             next(err);
         }
     }
@@ -109,7 +104,7 @@ class SampleService extends RootService {
             const result = await this.sample_controller.update_records({ ...seek_conditions }, { ...data });
             return this.process_update_result({ ...data, ...result });
         } catch (e) {
-            const err = process_failed_response(`[SampleService] update_records: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] update_records: ${e.message}`, 500);
             next(err);
         }
     }
@@ -117,12 +112,12 @@ class SampleService extends RootService {
     async delete_record_by_id(request, next) {
         try {
             const { id } = request.params;
-            if (!id) return next(process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
             const result = await this.sample_controller.delete_records({ id });
             return this.process_delete_result(result);
         } catch (e) {
-            const err = process_failed_response(`[SampleService] delete_record_by_id: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] delete_record_by_id: ${e.message}`, 500);
             next(err);
         }
     }
@@ -135,7 +130,7 @@ class SampleService extends RootService {
             const result = await this.sample_controller.delete_records({ ...seek_conditions });
             return this.process_delete_result({ ...result });
         } catch (e) {
-            const err = process_failed_response(`[SampleService] delete_records: ${e.message}`, 500);
+            const err = this.process_failed_response(`[SampleService] delete_records: ${e.message}`, 500);
             next(err);
         }
     }

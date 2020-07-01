@@ -23,3 +23,6 @@
 [2020-06-24T22:40:58.896Z : [31merror[39m] - [SampleService] update_record_by_id: handler is not a function
 [2020-06-24T22:42:07.350Z : [31merror[39m] - [SampleService] update_record_by_id: handler is not a function
 [2020-07-01T00:29:17.688Z : [31merror[39m] - Resource not found
+[2020-07-01T00:37:40.964Z : [31merror[39m] - Resource not found
+[2020-07-01T00:42:19.952Z : [31merror[39m] - [SampleService] read_records_by_filter: options[field].toLowerCase is not a function
+[2020-07-01T00:43:33.383Z : [31merror[39m] - [SampleService] read_records_by_filter: Cannot read property 'length' of undefined

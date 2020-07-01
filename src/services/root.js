@@ -3,19 +3,18 @@
 **/
 
 const { build_query } = require('../utilities/query');
-const { process_failed_response, process_successful_response } = require('../utilities/http-reponse');
 
 class RootService {
-    constructor() {}
+    constructor() { }
 
     async handle_database_read(Controller, query_options, extra_options = {}) {
         const {
             count,
             fields_to_return,
             limit,
-            skip,
             seek_conditions,
-            sort_condition
+            skip,
+            sort_condition,
         } = build_query(query_options);
 
         if (count) {
@@ -37,24 +36,44 @@ class RootService {
     }
 
     process_single_read(result) {
-        if (result && result.id) return process_successful_response(result);
-        return process_failed_response(`Resource not found`, 404);
+        if (result && result.id) return this.process_successful_response(result);
+        return this.process_failed_response(`Resource not found`, 404);
     }
 
     process_multiple_read_results(result) {
-        if (result && (result.count || result.length >= 0)) return process_successful_response(result);
-        return process_failed_response(`Resources not found`, 404);
+        if (result && (result.count || result.length >= 0)) return this.process_successful_response(result);
+        return this.process_failed_response(`Resources not found`, 404);
     }
 
     process_update_result(result) {
-        if (result && result.ok && result.nModified) return process_successful_response(result);
-        if (result && result.ok && !result.nModified) return process_successful_response(result, 210);
-        return process_failed_response(`Update failed`, 200);
+        if (result && result.ok && result.nModified) return this.process_successful_response(result);
+        if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
+        return this.process_failed_response(`Update failed`, 200);
     }
 
     process_delete_result(result) {
-        if (result && result.nModified) return process_successful_response(result);
-        return process_failed_response(`Deletion failed.`, 200);
+        if (result && result.nModified) return this.process_successful_response(result);
+        return this.process_failed_response(`Deletion failed.`, 200);
+    }
+
+    /** */
+
+    process_failed_response(message, code = 400) {
+        return {
+            error: message,
+            payload: null,
+            status_code: code,
+            success: false,
+        }
+    }
+
+    process_successful_response(payload, code = 200) {
+        return {
+            payload,
+            error: null,
+            status_code: code,
+            success: true,
+        }
     }
 }
 

@@ -41,7 +41,9 @@ exports.build_query = options => {
     return {
         count,
         fields_to_return,
+        limit,
         seek_conditions,
+        skip,
         sort_condition,
     }
 }
@@ -105,7 +107,7 @@ exports.build_wildcard_options = (key_list, value) => {
 
 exports.determine_pagination = (page, population) => {
     return{
-        limit: population,
+        limit: Number(population),
         skip: page * population,
     }
 }
