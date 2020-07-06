@@ -9,11 +9,11 @@ const {
 } = process.env;
 
 /** Database Conneciton Setup */
-const database = require('./src/models/config');
+const database = require('./src/models/_config');
 database.connect();
 
 /** Routes Configuration */
-const route_handler = require('./src/routes/config');
+const route_handler = require('./src/routes/_config');
 
 /** 3rd Party Middlewares */
 const body_parser = require('body-parser');

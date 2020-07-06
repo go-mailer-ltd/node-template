@@ -1,7 +1,7 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
-const SuperController = require('./super');
+const SuperController = require('./_super');
 
 class SampleController extends SuperController {
     constructor() {
@@ -18,7 +18,7 @@ class SampleController extends SuperController {
 
             return this.jsonize({
                 ...created_record,
-                id: await this.model.auto_increment(created_record._id, created_record.time_stamp),
+                id: await this.get_record_metadata(this.model, created_record._id, created_record.time_stamp),
             })
         } catch (e) {
             console.log(`[SampleController] create_record Error: ${e.message}`);
@@ -27,7 +27,7 @@ class SampleController extends SuperController {
 
     async read_records(conditions, fields_to_return = '', sort_options = '', skip = 0, limit = Number.MAX_SAFE_INTEGER) {
         try {
-            const result = await this.model.find({ ...conditions }, fields_to_return )
+            const result = await this.model.find({ ...conditions }, fields_to_return)
                 .skip(skip).limit(limit).sort(sort_options);
             return this.jsonize([...result]);
         } catch (e) {

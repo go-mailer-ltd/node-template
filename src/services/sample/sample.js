@@ -2,7 +2,7 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 //
-const RootService = require('../root');
+const RootService = require('../_root');
 const Observabble = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../schemas/sample');
