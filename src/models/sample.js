@@ -49,12 +49,6 @@ const SampleSchema = new Schema({
 
 const Sample = module.exports = model('Sample', SampleSchema);
 
-module.exports.auto_increment = async (_id, time_stamp) => {
-    const n = (await Sample.count({ time_stamp: { $lt: time_stamp } })) + 1;
-    await Sample.update({ _id }, { id: n });
-    return n;
-}
-
 // /** Create Indexes */
 // Sample.ensureIndexes({ time_stamp: -1 }); // single descending
 // Sample.ensureIndexes({ id: 1 }, { unique: true }); // single unique
