@@ -13,7 +13,7 @@ const dev_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:h
 const prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version :referrer - :user-agent | :status :response-time ms'
 const morgan_format = NODE_ENV === 'production' ? prod_format : dev_format;
 
-const request_log_stream = createWriteStream(resolve(__dirname, `../../request.log`), { flags: 'a' });
+const request_log_stream = createWriteStream(resolve(__dirname, `../../logs/request.log`), { flags: 'a' });
 exports.morgan = morgan(morgan_format, { stream: request_log_stream });
 
 /** WINSTON */
@@ -32,9 +32,9 @@ const {
 
 const log_transports = {
     console: new transports.Console({ level: 'warn' }),
-    combined_log: new transports.File({ level: 'info', filename: `combined.log` }),
-    error_log: new transports.File({ level: 'error', filename: `error.log` }),
-    exception_log: new transports.File({ filename: 'exception.log' }),
+    combined_log: new transports.File({ level: 'info', filename: `logs/combined.log` }),
+    error_log: new transports.File({ level: 'error', filename: `logs/error.log` }),
+    exception_log: new transports.File({ filename: 'logs/exception.log' }),
 };
 
 const log_format = printf(({ level, message, timestamp }) => `[${timestamp} : ${level}] - ${message}`);
