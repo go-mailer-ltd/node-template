@@ -29,7 +29,7 @@ exports.build_query = options => {
             condition = this.build_in_query(field_value);
         } else if (field_value.includes('!')) {
             condition = this.build_nor_query(field_value);
-        } else if (field_value.includes('-')) {
+        } else if (field_value.includes('~')) {
             condition = this.build_range_query(field_value);
         } else {
             condition = this.build_or_query(field_value);
