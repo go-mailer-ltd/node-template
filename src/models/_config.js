@@ -19,6 +19,6 @@ module.exports.connect = () => {
             return;
         }
 
-        console.log(`Database connecction established.`); 
+        console.log(`Database connection established.`); 
     });
 }

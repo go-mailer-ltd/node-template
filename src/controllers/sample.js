@@ -16,10 +16,10 @@ class SampleController extends SuperController {
             const record_to_create = new this.model({ ...data });
             const created_record = await record_to_create.save();
 
-            return this.jsonize({
-                ...created_record,
+            return {
+                ...this.jsonize(created_record),
                 id: await this.get_record_metadata(this.model, created_record._id, created_record.time_stamp),
-            })
+            };
         } catch (e) {
             console.log(`[SampleController] create_record Error: ${e.message}`);
         }

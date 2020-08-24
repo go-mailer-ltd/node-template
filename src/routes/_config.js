@@ -19,7 +19,7 @@ router.use('/samples', sample_route_handler);
 router.use(process_response);
 
 /** Static Routes */
-router.use('/files/image/:image_name', (request, response) => {
+router.use('/image/:image_name', (request, response) => {
 
 });
 

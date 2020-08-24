@@ -3,7 +3,7 @@
 **/
 //
 const RootService = require('../_root');
-const Observabble = require('../../utilities/observable');
+const Observable = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../schemas/sample');
 
@@ -30,6 +30,7 @@ class SampleService extends RootService {
 
             if (error) throw new Error(error);
 
+            delete body.id;
             const result = await this.sample_controller.create_record({ ...body });
             return this.process_single_read(result);
         } catch (e) {
@@ -40,12 +41,11 @@ class SampleService extends RootService {
 
     async read_record_by_id(request, next) {
         try {
-            Observabble.emit('new', { name: 'new' });
             const { id } = request.params;
             if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
-            const result = await this.sample_controller.read_records({ id });
-            return this.process_single_read(result);
+            const result = await this.sample_controller.read_records({ id, is_active: true });
+            return this.process_single_read(result[0]);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
             return next(err);
