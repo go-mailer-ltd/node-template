@@ -4,8 +4,8 @@
 
 const router = require('express').Router();
 const sample_service = require('../services/sample/sample');
-
-router
+try {
+    router
     .post('/', async (request, response, next) => {
         request.payload = await sample_service.create_record(request, next);
         next();
@@ -38,5 +38,8 @@ router
         request.payload = await sample_service.delete_records(request, next);
         next();
     })
-
-module.exports = router;
+} catch (e) {
+    console.log(`[Route Error] /samples: ${e.message}`);
+} finally {    
+    module.exports = router;
+}
