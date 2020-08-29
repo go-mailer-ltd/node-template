@@ -9,16 +9,21 @@ const {
 const mongoose = require('mongoose');
 
 module.exports.connect = () => {
-    mongoose.connect(APP_DB_URI, {
-        autoIndex: false,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    }, (err, data) => {
-        if (err) {
-            console.log(`Could not connect to database`);
-            return;
-        }
+    try {
 
-        console.log(`Database connection established.`); 
-    });
+        mongoose.connect(APP_DB_URI, {
+            autoIndex: false,
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        }, (err, data) => {
+            if (err) {
+                console.log(`Could not connect to database`);
+                return;
+            }
+            
+            console.log(`Database connection established.`); 
+        });
+    } catch (e) {
+        console.log(`DB Error: ${e.message}`);
+    }
 }
