@@ -2,10 +2,16 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
+const appEvent = require('../events/_config');
 const { build_query } = require('../utilities/query');
 
 class RootService {
-    constructor() { }
+    constructor() { 
+        this.standard_metadata = {
+            is_active: true,
+            is_deleted: false,
+        }
+    }
     
     delete_record_metadata (record) {
         let record_to_mutate = { ...record };
@@ -48,8 +54,13 @@ class RootService {
         }
     }
 
-    process_single_read(result) {
-        if (result && result.id) return this.process_successful_response(result);
+    process_single_read(result, event_name) {
+        if (result && result.id) {
+            if (event_name) {
+                appEvent.emit(event_name, result);
+            }
+            return this.process_successful_response(result);
+        }
         return this.process_failed_response(`Resource not found`, 404);
     }
 
@@ -58,14 +69,24 @@ class RootService {
         return this.process_failed_response(`Resources not found`, 404);
     }
 
-    process_update_result(result) {
-        if (result && result.ok && result.nModified) return this.process_successful_response(result);
+    process_update_result(result, event_name) {
+        if (result && result.ok && result.nModified) {
+            if (event_name) {
+                appEvent.emit(event_name, result);
+            }
+            return this.process_successful_response(result);
+        } 
         if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
         return this.process_failed_response(`Update failed`, 200);
     }
 
-    process_delete_result(result) {
-        if (result && result.nModified) return this.process_successful_response(result);
+    process_delete_result(result, event_name) {
+        if (result && result.nModified) {
+            if (event_name) {
+                appEvent.emit(event_name, result);
+            }
+            return this.process_successful_response(result);
+        }
         return this.process_failed_response(`Deletion failed.`, 200);
     }
 
