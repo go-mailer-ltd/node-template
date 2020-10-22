@@ -6,14 +6,18 @@ const appEvent = require('../events/_config');
 const { build_query } = require('../utilities/query');
 
 class RootService {
-    constructor() { 
+    constructor() {
         this.standard_metadata = {
             is_active: true,
             is_deleted: false,
         }
     }
-    
-    delete_record_metadata (record) {
+
+    create_dummy_request(body = {}, params = {}, query = {}) {
+        return { body, params, query };
+    }
+
+    delete_record_metadata(record) {
         let record_to_mutate = { ...record };
 
         //
@@ -75,7 +79,7 @@ class RootService {
                 appEvent.emit(event_name, result);
             }
             return this.process_successful_response(result);
-        } 
+        }
         if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
         return this.process_failed_response(`Update failed`, 200);
     }
