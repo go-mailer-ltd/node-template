@@ -1,141 +1,116 @@
-/**
- * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
-**/
-//
+/** */
+require('dotenv').config();
+const axios = require('axios').default;
 const RootService = require('../_root');
+const StreamClient = require('./client');
 const StreamController = require('../../controllers/stream');
-const StreamSchema = require('../../schemas/stream');
 
-const {
-    build_query,
-    build_wildcard_options
-} = require('../../utilities/query');
+const { TWT_BEARER_TOKEN } = process.env;
+const { logger } = require('../../utilities/logger');
 
 class StreamService extends RootService {
     constructor(
-        stream_controller
+        stream_controller,
+        stream_client,
     ) {
-        /** */
         super();
-
-        /** */
+        this.organisation_rules = new Map();
         this.stream_controller = stream_controller;
+        this.stream_headers = {
+            authorization: `Bearer ${TWT_BEARER_TOKEN}`,
+        };
+        this.stream_url = `https://api.twitter.com/2/tweets/search/stream`;
+        
+        /** */
+        this.fetch_rules();
+        stream_client.listen();
     }
 
-    async create_record(request, next) {
-        try {
-            const { body } = request;
-            const { error } = StreamSchema.validate(body);
+    build_rule(data) {
+        const { org_id, handles, hashtags } = data;
 
-            if (error) throw new Error(error);
+        const valid_handles = this.validate_rule_group(handles);
+        const valid_hashtags = this.validate_rule_group(hashtags);
 
-            delete body.id;
-            const result = await this.stream_controller.create_record({ ...body });
-            return this.process_single_read(result);
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] created_record: ${e.message}`, 500);
-            next(err);
+        const formatted_handles = valid_handles.map(handle => `form:@${handle} OR @${handle}`);
+        const formatted_hashtags = valid_hashtags.map(hashtag => `#${hashtag}`);
+
+        const value = [...formatted_handles, ...formatted_hashtags];
+        return {
+            tag: org_id,
+            value: value.join(' OR '),
         }
     }
 
-    async read_record_by_id(request, next) {
-        try {
-            const { id } = request.params;
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
-
-            const result = await this.stream_controller.read_records({ id, ...this.standard_metadata });
-            return this.process_single_read(result[0]);
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] update_record_by_id: ${e.message}`, 500);
-            return next(err);
-        }
+    async create_rule(org_id, rule) {
+        return axios.post(`${this.stream_url}/rules`, { add: [rule] }, { headers: this.stream_headers })
+            .then(response => {
+                const { id } = response.data.data;
+                this.organisation_rules.set(Number(org_id), id);
+                return id;
+            })
+            .catch(e => {
+                logger.error(`[StreamService Error] create_rule - ${e.message}`);
+            })
     }
 
-    async read_records_by_filter(request, next) {
-        try {
-            const { query } = request;
-
-            const result = await this.handle_database_read(this.stream_controller, query, { ...this.standard_metadata });
-            return this.process_multiple_read_results(result);
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] read_records_by_filter: ${e.message}`, 500);
-            next(err);
-        }
+    async delete_rule(org_id, rule_id) {
+        return axios.post(`${this.stream_url}/rules`, { delete: { ids: [rule_id] } }, { headers: this.stream_headers })
+            .then(response => {
+                this.organisation_rules.delete(Number(org_id))
+            })
+            .catch(e => {
+                logger.error(`[StreamService Error] create_rule - ${e.message}`);
+            })
     }
 
-    async read_records_by_wildcard(request, next) {
-        try {
-            const { params, query } = request;
+    async fetch_rules() {
+        axios.get(`${this.stream_url}/rules`, { headers: this.stream_headers })
+            .then(response => {
+                const { data } = response.data;
+                data.forEach(rule => {
+                    const { id, tag } = rule;
+                    this.organisation_rules.set(Number(tag), id);
+                })
+            })
+            .catch(e => {
+                logger.error(`[StreamService Error] fetch_rules - ${e.message}`);
+            })
+    }
 
-            if (!params.keys || !params.keys) {
-                return next(this.process_failed_response(`Invalid key/keyword`, 400));
+    async handle_rule_change(data) {
+        try {
+            const { org_id } = data;
+            const rule = this.build_rule(data);
+
+            if (this.organisation_rules.has(Number(org_id))) {
+                await this.delete_rule(org_id, this.organisation_rules.get(Number(org_id)));
             }
 
-            const wildcard_conditions = build_wildcard_options(params.keys, params.keyword);
-            const result = await this.handle_database_read(this.stream_controller, query, {
-                ...wildcard_conditions,
-                ...this.standard_metadata,
-            });
-            return this.process_multiple_read_results(result);
+            await this.create_rule(org_id, rule);
         } catch (e) {
-            const err = this.process_failed_response(`[StreamService] read_records_by_wildcard: ${e.message}`, 500);
-            next(err);
+            logger.error(`[StreamService Error] handle_rule_change - ${e.message}`);
         }
     }
 
-    async update_record_by_id(request, next) {
+    async handle_stream_data(data) {
         try {
-            const { id } = request.params;
-            const data = request.body;
-
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
-
-            const result = await this.stream_controller.update_records({ id }, { ...data });
-            return this.process_update_result({ ...result, id });
+            console.log(data);
         } catch (e) {
-            const err = this.process_failed_response(`[StreamService] update_record_by_id: ${e.message}`, 500);
-            next(err);
+            logger.error(`[StreamService Error] handle_rule_change - ${e.message}`);
         }
     }
 
-    async update_records(request, next) {
-        try {
-            const { options, data } = request.body;
-            const { seek_conditions } = build_query(options);
+    validate_rule_group(rule_group = []) {
+        let valid_rules = [];
+        rule_group.forEach(rule => {
+            if (rule) {
+                valid_rules.push(rule.replace(/[#@]/gi, ''));
+            }
+        });
 
-            const result = await this.stream_controller.update_records({ ...seek_conditions }, { ...data });
-            return this.process_update_result({ ...data, ...result, options: seek_conditions });
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] update_records: ${e.message}`, 500);
-            next(err);
-        }
-    }
-
-    async delete_record_by_id(request, next) {
-        try {
-            const { id } = request.params;
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
-
-            const result = await this.stream_controller.delete_records({ id });
-            return this.process_delete_result({ ...result, id });
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] delete_record_by_id: ${e.message}`, 500);
-            next(err);
-        }
-    }
-
-    async delete_records(request, next) {
-        try {
-            const { options } = request.body;
-            const { seek_conditions } = build_query(options);
-
-            const result = await this.stream_controller.delete_records({ ...seek_conditions });
-            return this.process_delete_result({ ...result, options: seek_conditions });
-        } catch (e) {
-            const err = this.process_failed_response(`[StreamService] delete_records: ${e.message}`, 500);
-            next(err);
-        }
+        return valid_rules;
     }
 }
 
-module.exports = new StreamService(StreamController);
+module.exports = new StreamService(StreamController, StreamClient);

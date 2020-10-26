@@ -12,7 +12,11 @@ const UserSchema = new Schema({
     },
     access_token: {
         type: String,
-        required: false
+        required: true
+    },
+    access_token_secret: {
+        type: String,
+        required: true
     },
     org_id: {
         type: Number,
@@ -20,7 +24,7 @@ const UserSchema = new Schema({
     },
     tweep_id: {
         type: String,
-        required: false
+        required: true
     },
     username: {
         type: String,

@@ -7,23 +7,23 @@ const webhook_service = require('../services/webhook/webhook');
 try {
     router
         .post('/', async (request, response, next) => {
-            request.payload = await webhook_service.create_record(request, next);
+            request.payload = await webhook_service.handle_incoming_event(request, next);
             next();
         })
         .get('/', async (request, response, next) => {
-            request.payload = await webhook_service.read_record_by_id(request, next);
+            request.payload = await webhook_service.verify_crc(request, next);
             next();
         })
         .get('/registered', async (request, response, next) => {
-            request.payload = await webhook_service.read_records_by_filter(request, next);
+            request.payload = await webhook_service.retrieve_webhook(request, next);
             next();
         })
-        .post('/ping', async (request, response, next) => {
-            request.payload = await webhook_service.read_records_by_wildcard(request, next);
+        .post('/ping/:webhook_id', async (request, response, next) => {
+            request.payload = await webhook_service.ping_webhook(request, next);
             next();
         })
         .post('/new', async (request, response, next) => {
-            request.payload = await webhook_service.update_record_by_id(request, next);
+            request.payload = await webhook_service.register_webhook(request, next);
             next();
         })
 } catch (e) {

@@ -11,6 +11,38 @@ class RootService {
             is_active: true,
             is_deleted: false,
         }
+
+        this.dictionary = {
+            0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
+
+            'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'E': 'E', 'F': 'F', 'G': 'G', 'H': 'H',
+            'I': 'I', 'J': 'J', 'K': 'K', 'L': 'L', 'M': 'M', 'N': 'N', 'O': 'O', 'P': 'P',
+            'Q': 'Q', 'R': 'R', 'S': 'S', 'T': 'T', 'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X',
+            'Y': 'Y', 'Z': 'Z', 'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd', 'e': 'e', 'f': 'f',
+            'g': 'g', 'h': 'h', 'i': 'i', 'j': 'j', 'k': 'k', 'l': 'l', 'm': 'm', 'n': 'n',
+            'o': 'o', 'p': 'p', 'q': 'q', 'r': 'r', 's': 's', 't': 't', 'u': 'u', 'v': 'v',
+            'w': 'w', 'x': 'x', 'y': 'y', 'z': 'z', '-': '-', '.': '.', '_': '_', '~': '~'
+        }
+    }
+
+    convert_to_base16(num) {
+        const char_representations = { 10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F' };
+        let base_16_string = ``, dividend = num, remainder = 0;
+
+        while (dividend > 0) {
+            if (dividend >= 16) {
+                dividend = Math.trunc(num / 16);
+                remainder = num - (dividend * 16);
+            } else {
+                remainder = dividend;
+                dividend = 0;
+            }
+            const b_16_val = remainder > 9 ? char_representations[remainder] : remainder;
+            base_16_string = `${b_16_val}${base_16_string}`;
+        }
+
+        //
+        return base_16_string;
     }
 
     create_dummy_request(body = {}, params = {}, query = {}) {
@@ -28,6 +60,35 @@ class RootService {
 
         //
         return { ...record_to_mutate };
+    }
+
+    encode_string(string) {
+        if (string === undefined) return '';
+        let encoded_string = ``;
+        for (let i = 0; i < string.length; i++) {
+            const current_character = string[i];
+            if (this.dictionary[current_character] !== undefined) {
+                encoded_string = `${encoded_string}${current_character}`;
+                continue;
+            }
+
+            const percent_encoded_character = this.get_percent_encoding(current_character);
+            encoded_string = `${encoded_string}${percent_encoded_character}`;
+        }
+
+        return encoded_string;
+    }
+
+    get_percent_encoding(character) {
+        let percent_encoded_string = ``;
+        const buff = Buffer.from(character);
+
+        for (let i = 0; i < buff.length; i++) {
+            const percent_character = `%${this.convert_to_base16(buff[i])}`;
+            percent_encoded_string = `${percent_encoded_string}${percent_character}`;
+        }
+
+        return percent_encoded_string;
     }
 
     async handle_database_read(Controller, query_options, extra_options = {}) {
@@ -100,15 +161,17 @@ class RootService {
         return {
             error: message,
             payload: null,
+            send_raw: false,
             status_code: code,
             success: false,
         }
     }
 
-    process_successful_response(payload, code = 200) {
+    process_successful_response(payload, code = 200, send_raw = false) {
         return {
             payload,
             error: null,
+            send_raw,
             status_code: code,
             success: true,
         }

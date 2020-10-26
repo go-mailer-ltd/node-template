@@ -8,6 +8,7 @@ const StreamSchema = new Schema({
     id: {
         type: Number,
         required: true,
+        default: 0,
     },
     handles: {
         type: Array,
@@ -22,6 +23,10 @@ const StreamSchema = new Schema({
     org_id: {
         type: Number,
         required: true
+    },
+    rule_id: {
+        type: String,
+        required: false,
     },
 
     //

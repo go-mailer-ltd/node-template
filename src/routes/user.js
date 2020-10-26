@@ -3,27 +3,27 @@
 **/
 
 const router = require('express').Router();
-const sample_service = require('../services/sample/sample');
+const user_service = require('../services/user/user');
 try {
     router
         .post('/token/access', async (request, response, next) => {
-            request.payload = await sample_service.create_record(request, next);
+            request.payload = await user_service.obtain_access_token(request, next);
             next();
         })
         .get('/token/request', async (request, response, next) => {
-            request.payload = await sample_service.read_records_by_filter(request, next);
+            request.payload = await user_service.obtain_request_token(request, next);
             next();
         })
         .get('/:org_id', async (request, response, next) => {
-            request.payload = await sample_service.read_record_by_id(request, next);
+            request.payload = await user_service.read_organisation_record(request, next);
             next();
         })
-        .delete('/:id', async (request, response, next) => {
-            request.payload = await sample_service.delete_record_by_id(request, next);
+        .delete('/:org_id', async (request, response, next) => {
+            request.payload = await user_service.delete_organisation_record(request, next);
             next();
         })
 } catch (e) {
-    console.log(`[Route Error] /samples: ${e.message}`);
+    console.log(`[Route Error] /users: ${e.message}`);
 } finally {
     module.exports = router;
 }

@@ -6,8 +6,9 @@ module.exports.format_data_for_database = data => {
     return {
         ...data,
         tweep_id: data.user_id,
-        username: data.screenName,
+        username: data.screen_name,
         access_token: data.oauth_token,
+        access_token_secret: data.oauth_token_secret,
     }
 }
 
