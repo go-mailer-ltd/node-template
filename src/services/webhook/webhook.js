@@ -7,6 +7,8 @@ const crypto = require('crypto');
 const Twit = require('twitter-lite');
 const RootService = require('../_root');
 const appEvent = require('../../events/_config');
+const { ACCOUNT_ACTIVITY_EVENT, } = require('../../events/constants/user');
+const { process_direct_message } = require('./event-processor');
 
 const {
     NOTCH_COMMS_URI,
@@ -32,7 +34,7 @@ class WebhookService extends RootService {
 
     async handle_incoming_event(request, next) {
         try {
-            appEvent.emit('twitter_event', request.body);
+            appEvent.emit(request.body.for_user_id, request.body);
             return this.process_successful_response({}, 200, true);
         } catch (e) {
             e = e.errors ? e.errors[0] : e;
@@ -58,7 +60,7 @@ class WebhookService extends RootService {
         try {
             const webhook_uri = `${NOTCH_COMMS_URI}/twitter/webhook`;
             const registration_uri = `account_activity/all/${TWT_SANDBOX}/webhooks`;
-            const registration_response = await this.twitter_client.post(`${registration_uri}`, {url: webhook_uri});
+            const registration_response = await this.twitter_client.post(`${registration_uri}`, { url: webhook_uri });
             return this.process_successful_response(registration_response);
         } catch (e) {
             e = e.errors ? e.errors[0] : e;

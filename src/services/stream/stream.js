@@ -22,7 +22,7 @@ class StreamService {
 
         /** */
         this.fetch_rules();
-        stream_client.listen();
+        // stream_client.listen();
     }
 
     build_rule(data) {

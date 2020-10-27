@@ -3,8 +3,9 @@
 **/
 //
 require('dotenv').config();
-const { TwitterClient } = require('../_twitter-client');
+const { TwitterClient, } = require('../_twitter-client');
 const RootService = require('../_root');
+const Tweep = require('./tweep');
 const UserController = require('../../controllers/user');
 
 const { format_data_for_database, split_query_params } = require('./helper');
@@ -23,9 +24,20 @@ class UserService extends RootService {
         super();
         this.tweeps = new Map();
         this.twitter_client = twitter_client;
+        this.user_controller = user_controller;
 
         /** */
-        this.user_controller = user_controller;
+        this.load_users();
+    }
+
+    async add_tweep(user_data, should_create_subscription = false) {
+        const { tweep_id } = user_data;
+        const tweep = new Tweep(user_data);
+        this.tweeps.set(tweep_id, tweep);
+
+        if (should_create_subscription) {
+            tweep.create_subscription();
+        }
     }
 
     async create_record(data) {
@@ -33,11 +45,13 @@ class UserService extends RootService {
         let data_to_save = format_data_for_database(data);
         const record = await this.user_controller.read_records({ org_id });
         if (record[0] && record[0].id) {
-            const record_update = await this.user_controller.update_records({ org_id }, { ...data_to_save, is_active: true, });
-            return this.process_update_result({ ...record_update, data_to_save, is_active: true, }, TWT_ACCT_CONNECTED);
+            const record_update = await this.user_controller.update_records({ org_id }, { ...data_to_save });
+            this.add_tweep({...record[0], ...data_to_save}, true);
+            return this.process_update_result({ ...record_update, ...data_to_save }, TWT_ACCT_CONNECTED);
         }
 
         const result = await this.user_controller.create_record({ ...data_to_save });
+        this.add_tweep(result, true);
         return this.process_single_read(result, TWT_ACCT_CONNECTED);
     }
 
@@ -75,7 +89,7 @@ class UserService extends RootService {
             const { org_id } = request.params;
             if (!org_id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
-            const result = await this.user_controller.read_records({ org_id, ...this.standard_metadata });
+            const result = await this.user_controller.read_records({ org_id: Number(org_id), ...this.standard_metadata });
             return this.process_single_read(result[0]);
         } catch (e) {
             const err = this.process_failed_response(`[UserService] read_organisation_record: ${e.message}`, 500);
@@ -101,11 +115,8 @@ class UserService extends RootService {
         const users = await this.user_controller.read_records({});
 
         users.forEach(user => {
-            console.log(user);
-            // const tweep = new Tweep(user);
-            // this.addUserToServerObject(tweep)
-        })
-
+            this.add_tweep(user);
+        });
     }
 }
 

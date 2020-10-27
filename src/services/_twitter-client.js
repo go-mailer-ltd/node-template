@@ -18,7 +18,7 @@ module.exports.get_tweep_client = user_data => {
     const { access_token, access_token_secret } = user_data;
     return new TwitterClient({
         access_token_key: access_token,
-        access_token_key_secret: access_token_secret,
+        access_token_secret: access_token_secret,
         consumer_key: TWT_CONSUMER_KEY,
         consumer_secret: TWT_CONSUMER_SECRET,
     });

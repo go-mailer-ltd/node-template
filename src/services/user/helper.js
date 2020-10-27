@@ -9,8 +9,36 @@ module.exports.format_data_for_database = data => {
         username: data.screen_name,
         access_token: data.oauth_token,
         access_token_secret: data.oauth_token_secret,
+        is_active: true,
+        is_deleted: false,
     }
 }
+
+module.exports.format_dm_event_data = data => {
+    const data_to_send = {
+        userId: this.id,
+        message: {
+            id: message_id,
+            body
+        },
+        sender: {
+            id,
+            name
+        },
+        reply: {
+            userId: this._id,
+            recipient: id,
+            body: ''
+        },
+        orgId: this.orgId
+    }
+
+    return {
+
+    }
+}
+
+// module.exports.format_
 
 module.exports.split_query_params = (query) => {
     if (!query) return {};
