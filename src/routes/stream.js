@@ -2,6 +2,7 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
+require('../services/stream/stream');
 const router = require('express').Router();
 const stream_rule_service = require('../services/stream/rule');
 try {

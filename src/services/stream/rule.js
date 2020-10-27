@@ -4,8 +4,8 @@
 //
 const RootService = require('../_root');
 const StreamSchema = require('../../schemas/stream');
-const { STREAM_RULE_UPDATE } = require('../../events/constants/stream');
 const StreamController = require('../../controllers/stream');
+const { STREAM_RULE_UPDATE } = require('../../events/constants/stream');
 
 const {
 } = require('../../utilities/query');

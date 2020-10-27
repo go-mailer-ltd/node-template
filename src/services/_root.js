@@ -1,7 +1,6 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
-
 const appEvent = require('../events/_config');
 const { build_query } = require('../utilities/query');
 

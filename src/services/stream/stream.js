@@ -1,26 +1,25 @@
 /** */
 require('dotenv').config();
 const axios = require('axios').default;
-const RootService = require('../_root');
 const StreamClient = require('./client');
 const StreamController = require('../../controllers/stream');
 
 const { TWT_BEARER_TOKEN } = process.env;
 const { logger } = require('../../utilities/logger');
 
-class StreamService extends RootService {
+class StreamService {
     constructor(
-        stream_controller,
         stream_client,
     ) {
-        super();
+
+        /** */
         this.organisation_rules = new Map();
-        this.stream_controller = stream_controller;
+        this.stream_client = stream_client;
         this.stream_headers = {
             authorization: `Bearer ${TWT_BEARER_TOKEN}`,
         };
         this.stream_url = `https://api.twitter.com/2/tweets/search/stream`;
-        
+
         /** */
         this.fetch_rules();
         stream_client.listen();
@@ -93,9 +92,29 @@ class StreamService extends RootService {
         }
     }
 
-    async handle_stream_data(data) {
+    async handle_stream_data(stream_data) {
         try {
-            console.log(data);
+            const tweet_str = Buffer.from(stream_data).toString();
+            if (!tweet_str.trim()) return;
+
+            const tweet = JSON.parse(tweet_str);
+            const { data, includes, matching_rules, } = tweet;
+
+            const event_data = {
+                event: 'STREAM',
+                tweet_id: data.id,
+                created_at: data.created_at,
+                text: data.text,
+                author_id: data.author_id,
+                author: includes.users[0],
+            }
+
+            matching_rules.forEach(rule => {
+                const { tag } = rule;
+                this.stream_client.pass_event_to_notification_service({ ...event_data, orgId: tag });
+            });
+            // console.log(event_data, matching_rules)
+            // console.log('======');
         } catch (e) {
             logger.error(`[StreamService Error] handle_rule_change - ${e.message}`);
         }
@@ -113,4 +132,4 @@ class StreamService extends RootService {
     }
 }
 
-module.exports = new StreamService(StreamController, StreamClient);
+module.exports = new StreamService(StreamClient);

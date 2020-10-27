@@ -21,6 +21,7 @@ class UserService extends RootService {
     ) {
         /** */
         super();
+        this.tweeps = new Map();
         this.twitter_client = twitter_client;
 
         /** */
@@ -69,8 +70,6 @@ class UserService extends RootService {
         }
     }
 
-
-
     async read_organisation_record(request, next) {
         try {
             const { org_id } = request.params;
@@ -98,17 +97,14 @@ class UserService extends RootService {
     }
 
     /** */
-    async loadTwitterUsers() {
+    async load_users() {
         const users = await this.user_controller.read_records({});
 
-        if (users.success) {
-            for (let i in users.payload) {
-                const user = users.payload[i];
-                if (user.service !== this.serviceName) continue;
-                const tweep = new Tweep(user);
-                this.addUserToServerObject(tweep)
-            }
-        }
+        users.forEach(user => {
+            console.log(user);
+            // const tweep = new Tweep(user);
+            // this.addUserToServerObject(tweep)
+        })
 
     }
 }
