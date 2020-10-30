@@ -16,7 +16,7 @@ module.exports.format_data_for_database = data => {
 
 module.exports.format_dm_event_data = data => {
     const data_to_send = {
-        userId: this.id,
+        userId: data.tweep_id,
         message: {
             id: message_id,
             body
@@ -26,16 +26,15 @@ module.exports.format_dm_event_data = data => {
             name
         },
         reply: {
-            userId: this._id,
+            userId: data._id,
             recipient: id,
             body: ''
         },
-        orgId: this.orgId
+        orgId: data.org_id,
+        other: data
     }
 
-    return {
-
-    }
+    return data_to_send
 }
 
 // module.exports.format_

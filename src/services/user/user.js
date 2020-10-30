@@ -3,15 +3,16 @@
 **/
 //
 require('dotenv').config();
-const { TwitterClient, } = require('../_twitter-client');
-const RootService = require('../_root');
 const Tweep = require('./tweep');
+const RootService = require('../_root');
+const appEvent = require('../../events/_config');
 const UserController = require('../../controllers/user');
+
+const { TwitterClient, } = require('../_twitter-client');
+const { ACCOUNT_ACTIVITY_EVENT, } = require('../../events/constants/user');
 
 const { format_data_for_database, split_query_params } = require('./helper');
 const { TWT_ACCT_CONNECTED } = require('../../events/constants/user');
-const {
-} = require('../../utilities/query');
 
 const { TWT_CALLBACK, } = process.env;
 
@@ -28,6 +29,7 @@ class UserService extends RootService {
 
         /** */
         this.load_users();
+        appEvent.on(ACCOUNT_ACTIVITY_EVENT, data => this.handle_incoming_event(data));
     }
 
     async add_tweep(user_data, should_create_subscription = false) {
@@ -46,13 +48,22 @@ class UserService extends RootService {
         const record = await this.user_controller.read_records({ org_id });
         if (record[0] && record[0].id) {
             const record_update = await this.user_controller.update_records({ org_id }, { ...data_to_save });
-            this.add_tweep({...record[0], ...data_to_save}, true);
+            this.add_tweep({ ...record[0], ...data_to_save }, true);
             return this.process_update_result({ ...record_update, ...data_to_save }, TWT_ACCT_CONNECTED);
         }
 
         const result = await this.user_controller.create_record({ ...data_to_save });
         this.add_tweep(result, true);
         return this.process_single_read(result, TWT_ACCT_CONNECTED);
+    }
+
+    async handle_incoming_event(data) {
+        const recipient = data.for_user_id;
+
+        if (data.direct_message_events) {
+            const tweep = this.tweeps.get(recipient);
+            tweep.pass_to_ticket_service(data);
+        }
     }
 
     async obtain_access_token(request, next) {

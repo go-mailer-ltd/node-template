@@ -1,11 +1,12 @@
 /** */
 require('dotenv').config();
+const axios = require('axios').default;
 const RootService = require('../_root');
-const appEvent = require('../../events/_config');
 
 const { NOTCH_CHAT_URI, TWT_SANDBOX } = process.env;
 const { logger } = require('../../utilities/logger');
 const { get_tweep_client } = require('../_twitter-client');
+const { process_direct_message } = require('../_event-processor');
 
 class Tweep extends RootService {
     constructor(user_data) {
@@ -13,7 +14,6 @@ class Tweep extends RootService {
 
         this.twitter_client = get_tweep_client(user_data);
         this.user_data = user_data;
-        appEvent.on(this.user_data.tweep_id, this.handle_event);
     }
 
     async create_subscription() {
@@ -35,8 +35,14 @@ class Tweep extends RootService {
         }
     }
 
-    async handle_event(event_data) {
-        console.log(`@${this.user_data.username} responding`, event_data);
+    async pass_to_ticket_service(event_data) {
+        try {
+            const dm_data = process_direct_message({ ...event_data, ...this.user_data });
+            await axios.post(`${NOTCH_CHAT_URI}/`)
+            console.log(dm_data);
+        } catch (e) {
+            logger.error(`[Tweep Error] pass_to_ticket_service - ${e.message}`);
+        }
     }
 
     async reply_comment(data) {

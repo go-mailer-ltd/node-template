@@ -8,7 +8,7 @@ const Twit = require('twitter-lite');
 const RootService = require('../_root');
 const appEvent = require('../../events/_config');
 const { ACCOUNT_ACTIVITY_EVENT, } = require('../../events/constants/user');
-const { process_direct_message } = require('./event-processor');
+const { process_direct_message } = require('../_event-processor');
 
 const {
     NOTCH_COMMS_URI,
@@ -34,7 +34,7 @@ class WebhookService extends RootService {
 
     async handle_incoming_event(request, next) {
         try {
-            appEvent.emit(request.body.for_user_id, request.body);
+            appEvent.emit(ACCOUNT_ACTIVITY_EVENT, request.body);
             return this.process_successful_response({}, 200, true);
         } catch (e) {
             e = e.errors ? e.errors[0] : e;
