@@ -40,6 +40,7 @@ app.use('/', route_handler);
 
 /** Load Event files */
 require('./src/events/_loader');
+
 /** */
 app.listen(APP_PORT, () => {
     console.log(`Server started on port ${APP_PORT}`);
