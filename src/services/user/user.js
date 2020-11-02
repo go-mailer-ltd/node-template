@@ -9,12 +9,12 @@ const appEvent = require('../../events/_config');
 const UserController = require('../../controllers/user');
 
 const { TwitterClient, } = require('../_twitter-client');
-const { TWT_CALLBACK, } = process.env;
-const { TWT_ACCT_CONNECTED } = require('../../events/constants/user');
 const { ACCOUNT_ACTIVITY_EVENT, } = require('../../events/constants/user');
-const { format_data_for_database, split_query_params } = require('./helper');
-const { response } = require('express');
 
+const { format_data_for_database, split_query_params } = require('./helper');
+const { TWT_ACCT_CONNECTED } = require('../../events/constants/user');
+
+const { TWT_CALLBACK, } = process.env;
 
 class UserService extends RootService {
     constructor(
@@ -128,25 +128,6 @@ class UserService extends RootService {
         users.forEach(user => {
             this.add_tweep(user);
         });
-    }
-
-    /** */
-    async respond_to_activity(request, activity_type = 'comment', next) {
-        try {
-            const { user_id } = request.body;
-            const tweep = this.tweeps.get(user_id);
-
-            switch(activity_type) {
-                case 'comment':
-                    return await tweep.reply_comment(request.body);
-                case 'dm':
-                    return await tweep.reply_direct_message(request.body);
-                default:
-            }
-        } catch (e) {
-            const err = this.process_failed_response(`[UserService] delete_record_by_id: ${e.message}`, 500);
-            next(err);
-        }
     }
 }
 

@@ -5,7 +5,6 @@
 require('../services/stream/stream');
 const router = require('express').Router();
 const stream_rule_service = require('../services/stream/rule');
-const user_service = require('../services/user/user');
 try {
     router
         .post('/organisation', async (request, response, next) => {
@@ -17,11 +16,11 @@ try {
             next();
         })
         .post('/reply/tweet', async (request, response, next) => {
-            request.payload = await user_service.respond_to_activity(request, 'comment', next);
+            request.payload = await stream_rule_service.create_record(request, next);
             next();
         })
         .post('/reply/direct-message', async (request, response, next) => {
-            request.payload = await user_service.respond_to_activity(request, 'dm', next);
+            request.payload = await stream_rule_service.create_record(request, next);
             next();
         })
 } catch (e) {
