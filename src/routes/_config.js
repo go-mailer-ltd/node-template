@@ -11,15 +11,11 @@ const {
 } = require('../middlewares/http');
 
 /** Route Handlers */
-const stream_route_handler = require('./stream');
-const user_route_handler = require('./user');
-const webhook_route_handler = require('./webhook');
+const sample_route_handler = require('./sample');
 
 /** Cross Origin Handling */
 router.use(setup_request);
-router.use('/streams', stream_route_handler);
-router.use('/users', user_route_handler);
-router.use('/webhook', webhook_route_handler);
+router.use('/samples', sample_route_handler);
 router.use(process_response);
 
 /** Static Routes */

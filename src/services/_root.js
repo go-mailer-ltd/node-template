@@ -2,10 +2,16 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
+const appEvent = require('../events/_config');
 const { build_query } = require('../utilities/query');
 
 class RootService {
-    constructor() { }
+    constructor() { 
+        this.standard_metadata = {
+            is_active: true,
+            is_deleted: false,
+        }
+    }
     
     delete_record_metadata (record) {
         let record_to_mutate = { ...record };
@@ -18,35 +24,6 @@ class RootService {
 
         //
         return { ...record_to_mutate };
-    }
-
-    encode_string(string) {
-        if (string === undefined) return '';
-        let encoded_string = ``;
-        for (let i = 0; i < string.length; i++) {
-            const current_character = string[i];
-            if (this.dictionary[current_character] !== undefined) {
-                encoded_string = `${encoded_string}${current_character}`;
-                continue;
-            }
-
-            const percent_encoded_character = this.get_percent_encoding(current_character);
-            encoded_string = `${encoded_string}${percent_encoded_character}`;
-        }
-
-        return encoded_string;
-    }
-
-    get_percent_encoding(character) {
-        let percent_encoded_string = ``;
-        const buff = Buffer.from(character);
-
-        for (let i = 0; i < buff.length; i++) {
-            const percent_character = `%${this.convert_to_base16(buff[i])}`;
-            percent_encoded_string = `${percent_encoded_string}${percent_character}`;
-        }
-
-        return percent_encoded_string;
     }
 
     async handle_database_read(Controller, query_options, extra_options = {}) {
@@ -87,8 +64,13 @@ class RootService {
         return this.process_failed_response(`Resources not found`, 404);
     }
 
-    process_update_result(result) {
-        if (result && result.ok && result.nModified) return this.process_successful_response(result);
+    process_update_result(result, event_name) {
+        if (result && result.ok && result.nModified) {
+            if (event_name) {
+                appEvent.emit(event_name, result);
+            }
+            return this.process_successful_response(result);
+        } 
         if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
         return this.process_failed_response(`Update failed`, 200);
     }
@@ -104,17 +86,15 @@ class RootService {
         return {
             error: message,
             payload: null,
-            send_raw: false,
             status_code: code,
             success: false,
         }
     }
 
-    process_successful_response(payload, code = 200, send_raw = false) {
+    process_successful_response(payload, code = 200) {
         return {
             payload,
             error: null,
-            send_raw,
             status_code: code,
             success: true,
         }

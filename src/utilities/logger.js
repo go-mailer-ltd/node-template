@@ -37,7 +37,7 @@ const log_transports = {
     exception_log: new transports.File({ filename: 'logs/exception.log' }),
 };
 
-const log_format = printf(({ level, message, timestamp, }) => `[${timestamp} : ${level}] - ${message}`);
+const log_format = printf(({ level, message, timestamp }) => `[${timestamp} : ${level}] - ${message}`);
 
 const logger = createLogger({
     transports: [
