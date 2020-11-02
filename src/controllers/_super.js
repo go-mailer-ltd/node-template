@@ -28,8 +28,8 @@ class SuperController {
     }
 
     async get_record_metadata (model, _id, time_stamp) {
-        const n = (await model.count({ time_stamp: { $lt: time_stamp } })) + 1;
-        await model.update({ _id }, { id: n });
+        const n = (await model.countDocuments({ time_stamp: { $lt: time_stamp } })) + 1;
+        await model.updateOne({ _id }, { id: n });
         return n;
     }
 }
