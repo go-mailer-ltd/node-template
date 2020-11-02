@@ -24,6 +24,6 @@ module.exports.connect = () => {
             console.log(`Database connection established.`); 
         });
     } catch (e) {
-        console.log(`[DB Error]: ${e.message}`);
+        console.log(`DB Error: ${e.message}`);
     }
 }

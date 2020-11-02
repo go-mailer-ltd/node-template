@@ -1,54 +1,13 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
-const appEvent = require('../events/_config');
+
 const { build_query } = require('../utilities/query');
 
 class RootService {
-    constructor() {
-        this.standard_metadata = {
-            is_active: true,
-            is_deleted: false,
-        }
-
-        this.dictionary = {
-            0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
-
-            'A': 'A', 'B': 'B', 'C': 'C', 'D': 'D', 'E': 'E', 'F': 'F', 'G': 'G', 'H': 'H',
-            'I': 'I', 'J': 'J', 'K': 'K', 'L': 'L', 'M': 'M', 'N': 'N', 'O': 'O', 'P': 'P',
-            'Q': 'Q', 'R': 'R', 'S': 'S', 'T': 'T', 'U': 'U', 'V': 'V', 'W': 'W', 'X': 'X',
-            'Y': 'Y', 'Z': 'Z', 'a': 'a', 'b': 'b', 'c': 'c', 'd': 'd', 'e': 'e', 'f': 'f',
-            'g': 'g', 'h': 'h', 'i': 'i', 'j': 'j', 'k': 'k', 'l': 'l', 'm': 'm', 'n': 'n',
-            'o': 'o', 'p': 'p', 'q': 'q', 'r': 'r', 's': 's', 't': 't', 'u': 'u', 'v': 'v',
-            'w': 'w', 'x': 'x', 'y': 'y', 'z': 'z', '-': '-', '.': '.', '_': '_', '~': '~'
-        }
-    }
-
-    convert_to_base16(num) {
-        const char_representations = { 10: 'A', 11: 'B', 12: 'C', 13: 'D', 14: 'E', 15: 'F' };
-        let base_16_string = ``, dividend = num, remainder = 0;
-
-        while (dividend > 0) {
-            if (dividend >= 16) {
-                dividend = Math.trunc(num / 16);
-                remainder = num - (dividend * 16);
-            } else {
-                remainder = dividend;
-                dividend = 0;
-            }
-            const b_16_val = remainder > 9 ? char_representations[remainder] : remainder;
-            base_16_string = `${b_16_val}${base_16_string}`;
-        }
-
-        //
-        return base_16_string;
-    }
-
-    create_dummy_request(body = {}, params = {}, query = {}) {
-        return { body, params, query };
-    }
-
-    delete_record_metadata(record) {
+    constructor() { }
+    
+    delete_record_metadata (record) {
         let record_to_mutate = { ...record };
 
         //
@@ -118,13 +77,8 @@ class RootService {
         }
     }
 
-    process_single_read(result, event_name) {
-        if (result && result.id) {
-            if (event_name) {
-                appEvent.emit(event_name, result);
-            }
-            return this.process_successful_response(result);
-        }
+    process_single_read(result) {
+        if (result && result.id) return this.process_successful_response(result);
         return this.process_failed_response(`Resource not found`, 404);
     }
 
@@ -133,24 +87,14 @@ class RootService {
         return this.process_failed_response(`Resources not found`, 404);
     }
 
-    process_update_result(result, event_name) {
-        if (result && result.ok && result.nModified) {
-            if (event_name) {
-                appEvent.emit(event_name, result);
-            }
-            return this.process_successful_response(result);
-        }
+    process_update_result(result) {
+        if (result && result.ok && result.nModified) return this.process_successful_response(result);
         if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
         return this.process_failed_response(`Update failed`, 200);
     }
 
-    process_delete_result(result, event_name) {
-        if (result && result.nModified) {
-            if (event_name) {
-                appEvent.emit(event_name, result);
-            }
-            return this.process_successful_response(result);
-        }
+    process_delete_result(result) {
+        if (result && result.nModified) return this.process_successful_response(result);
         return this.process_failed_response(`Deletion failed.`, 200);
     }
 
