@@ -22,7 +22,7 @@ class StreamService {
 
         /** */
         this.fetch_rules();
-        // stream_client.listen();
+        stream_client.listen();
     }
 
     build_rule(data) {
@@ -113,8 +113,6 @@ class StreamService {
                 const { tag } = rule;
                 this.stream_client.pass_event_to_notification_service({ ...event_data, orgId: tag });
             });
-            // console.log(event_data, matching_rules)
-            // console.log('======');
         } catch (e) {
             logger.error(`[StreamService Error] handle_rule_change - ${e.message}`);
         }

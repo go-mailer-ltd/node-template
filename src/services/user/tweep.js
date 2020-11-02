@@ -38,8 +38,7 @@ class Tweep extends RootService {
     async pass_to_ticket_service(event_data) {
         try {
             const dm_data = process_direct_message({ ...event_data, ...this.user_data });
-            await axios.post(`${NOTCH_CHAT_URI}/`)
-            console.log(dm_data);
+            await axios.post(`${NOTCH_CHAT_URI}`, dm_data);
         } catch (e) {
             logger.error(`[Tweep Error] pass_to_ticket_service - ${e.message}`);
         }
