@@ -6,14 +6,14 @@ const appEvent = require('../events/_config');
 const { build_query } = require('../utilities/query');
 
 class RootService {
-    constructor() { 
+    constructor() {
         this.standard_metadata = {
             is_active: true,
             is_deleted: false,
         }
     }
-    
-    delete_record_metadata (record) {
+
+    delete_record_metadata(record) {
         let record_to_mutate = { ...record };
 
         //
@@ -36,22 +36,14 @@ class RootService {
             sort_condition,
         } = build_query(query_options);
 
-        if (count) {
-            return {
-                count: (await Controller.read_records({
-                    ...seek_conditions,
-                    ...extra_options,
-                })).length
-            }
-        } else {
-            return await Controller.read_records(
-                { ...seek_conditions, ...extra_options },
-                fields_to_return,
-                sort_condition,
-                skip,
-                limit
-            );
-        }
+        return await Controller.read_records(
+            { ...seek_conditions, ...extra_options, },
+            fields_to_return,
+            sort_condition,
+            count || false,
+            skip,
+            limit
+        );
     }
 
     process_single_read(result, event_name) {
@@ -75,7 +67,7 @@ class RootService {
                 appEvent.emit(event_name, result);
             }
             return this.process_successful_response(result);
-        } 
+        }
         if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
         return this.process_failed_response(`Update failed`, 200);
     }

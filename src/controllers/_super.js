@@ -19,6 +19,19 @@ files.forEach(file => {
 class SuperController {
     constructor () {}
     
+    delete_record_metadata (record) {
+        let record_to_mutate = { ...record };
+
+        //
+        delete record_to_mutate.timestamp;
+        delete record_to_mutate.created_on;
+        delete record_to_mutate.updated_on;
+        delete record_to_mutate._v;
+
+        //
+        return { ...record_to_mutate };
+    }
+
     get_model(model_name) {
         return mongoose.model(model_name);
     }

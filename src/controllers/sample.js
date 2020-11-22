@@ -25,18 +25,30 @@ class SampleController extends SuperController {
         }
     }
 
-    async read_records(conditions, fields_to_return = '', sort_options = '', skip = 0, limit = Number.MAX_SAFE_INTEGER) {
+    async read_records(conditions, fields_to_return = '', sort_options = '', count = false, skip = 0, limit = Number.MAX_SAFE_INTEGER) {
         try {
-            const result = await this.model.find({ ...conditions }, fields_to_return)
-                .skip(skip).limit(limit).sort(sort_options);
-            return this.jsonize([...result]);
+            let result = null;
+            if (count) {
+                result = await this.model.countDocuments({ ...conditions }, fields_to_return)
+                    .skip(skip)
+                    .limit(limit)
+                    .sort(sort_options);
+                return result;
+            } else {
+                result = await this.model.countDocuments({ ...conditions }, fields_to_return)
+                    .skip(skip)
+                    .limit(limit)
+                    .sort(sort_options);
+                return this.jsonize([...result]);
+            }
         } catch (e) {
             console.log(`[SampleController] read_records: ${e.message}`);
         }
     }
 
-    async update_records(conditions, data_to_set) {
+    async update_records(conditions, data) {
         try {
+            const data_to_set = this.delete_record_metadata(data);
             const result = await this.model.updateMany({
                 ...conditions
             }, {
@@ -44,7 +56,7 @@ class SampleController extends SuperController {
                 $currentDate: { updated_on: true }
             });
 
-            return this.jsonize(result);
+            return this.jsonize({ ...result, data });
         } catch (e) {
             console.log(`[SampleController] update_records Error: ${e.message}`);
         }
