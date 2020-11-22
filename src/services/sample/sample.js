@@ -3,6 +3,7 @@
 **/
 //
 const RootService = require('../_root');
+const Observable = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../schemas/sample');
 
@@ -43,7 +44,7 @@ class SampleService extends RootService {
             const { id } = request.params;
             if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
-            const result = await this.sample_controller.read_records({ id, ...this.standard_metadata });
+            const result = await this.sample_controller.read_records({ id, is_active: true });
             return this.process_single_read(result[0]);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
@@ -55,7 +56,7 @@ class SampleService extends RootService {
         try {
             const { query } = request;
 
-            const result = await this.handle_database_read(this.sample_controller, query, { ...this.standard_metadata });
+            const result = await this.handle_database_read(this.sample_controller, query);
             return this.process_multiple_read_results(result);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] read_records_by_filter: ${e.message}`, 500);
@@ -72,10 +73,7 @@ class SampleService extends RootService {
             }
 
             const wildcard_conditions = build_wildcard_options(params.keys, params.keyword);
-            const result = await this.handle_database_read(this.sample_controller, query, {
-                ...wildcard_conditions,
-                ...this.standard_metadata,
-            });
+            const result = await this.handle_database_read(this.sample_controller, query, wildcard_conditions);
             return this.process_multiple_read_results(result);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] read_records_by_wildcard: ${e.message}`, 500);
@@ -91,7 +89,7 @@ class SampleService extends RootService {
             if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
             const result = await this.sample_controller.update_records({ id }, { ...data });
-            return this.process_update_result({ ...result, id });
+            return this.process_update_result(result);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
             next(err);
@@ -104,7 +102,7 @@ class SampleService extends RootService {
             const { seek_conditions } = build_query(options);
 
             const result = await this.sample_controller.update_records({ ...seek_conditions }, { ...data });
-            return this.process_update_result({ ...data, ...result, options: seek_conditions });
+            return this.process_update_result({ ...data, ...result });
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] update_records: ${e.message}`, 500);
             next(err);
@@ -117,7 +115,7 @@ class SampleService extends RootService {
             if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
 
             const result = await this.sample_controller.delete_records({ id });
-            return this.process_delete_result({ ...result, id });
+            return this.process_delete_result(result);
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] delete_record_by_id: ${e.message}`, 500);
             next(err);
@@ -130,7 +128,7 @@ class SampleService extends RootService {
             const { seek_conditions } = build_query(options);
 
             const result = await this.sample_controller.delete_records({ ...seek_conditions });
-            return this.process_delete_result({ ...result, options: seek_conditions });
+            return this.process_delete_result({ ...result });
         } catch (e) {
             const err = this.process_failed_response(`[SampleService] delete_records: ${e.message}`, 500);
             next(err);

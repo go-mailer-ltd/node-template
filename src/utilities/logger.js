@@ -14,6 +14,7 @@ const prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:
 const morgan_format = NODE_ENV === 'production' ? prod_format : dev_format;
 
 const request_log_stream = createWriteStream(resolve(__dirname, `../../logs/request.log`), { flags: 'a' });
+exports.morgan = morgan(morgan_format, { stream: request_log_stream });
 
 /** WINSTON */
 const {
@@ -55,6 +56,4 @@ const logger = createLogger({
     )
 });
 
-//
 exports.logger = logger;
-exports.morgan = morgan(morgan_format, { stream: request_log_stream });

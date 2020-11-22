@@ -46,13 +46,8 @@ class RootService {
         );
     }
 
-    process_single_read(result, event_name) {
-        if (result && result.id) {
-            if (event_name) {
-                appEvent.emit(event_name, result);
-            }
-            return this.process_successful_response(result);
-        }
+    process_single_read(result) {
+        if (result && result.id) return this.process_successful_response(result);
         return this.process_failed_response(`Resource not found`, 404);
     }
 
@@ -72,13 +67,8 @@ class RootService {
         return this.process_failed_response(`Update failed`, 200);
     }
 
-    process_delete_result(result, event_name) {
-        if (result && result.nModified) {
-            if (event_name) {
-                appEvent.emit(event_name, result);
-            }
-            return this.process_successful_response(result);
-        }
+    process_delete_result(result) {
+        if (result && result.nModified) return this.process_successful_response(result);
         return this.process_failed_response(`Deletion failed.`, 200);
     }
 
