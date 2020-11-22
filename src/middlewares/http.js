@@ -33,8 +33,10 @@ module.exports = {
     process_response(request, response, next) {
         if (!request.payload) return next();
 
-        const { status_code } = request.payload;
-        return response.status(status_code).json(request.payload)
+        const { response_type, send_raw_response, status_code } = request.payload;
+        const payload = send_raw_response ? request.payload.payload : request.payload;
+
+        return response.status(status_code).type(response_type).send(payload);
     },
 
     setup_request(request, response, next) {

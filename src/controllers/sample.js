@@ -29,13 +29,15 @@ class SampleController extends SuperController {
         try {
             let result = null;
             if (count) {
-                result = await this.model.countDocuments({ ...conditions }, fields_to_return)
+                result = await this.model.countDocuments({ ...conditions })
                     .skip(skip)
                     .limit(limit)
                     .sort(sort_options);
-                return result;
+                return {
+                    count: result,
+                };
             } else {
-                result = await this.model.countDocuments({ ...conditions }, fields_to_return)
+                result = await this.model.find({ ...conditions }, fields_to_return)
                     .skip(skip)
                     .limit(limit)
                     .sort(sort_options);

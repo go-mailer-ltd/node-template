@@ -93,10 +93,12 @@ class RootService {
         }
     }
 
-    process_successful_response(payload, code = 200) {
+    process_successful_response(payload, code = 200, send_raw_response = false, response_type = 'application/json') {
         return {
             payload,
             error: null,
+            response_type,
+            send_raw_response,
             status_code: code,
             success: true,
         }
