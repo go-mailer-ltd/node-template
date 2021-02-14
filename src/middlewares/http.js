@@ -18,12 +18,12 @@ module.exports = {
     handle_error(error, request, response, next) {
 
         // Log errors
-        logger.error(error.error);
+        logger.error(error.error || error.message);
 
         // return error
         return response.status(error.status_code || 500).json({
             success: false,
-            status_code: error.status_code,
+            status_code: error.status_code || 500,
             error: error.error || `Internal Server Error`,
             payload: null
         });
@@ -33,10 +33,8 @@ module.exports = {
     process_response(request, response, next) {
         if (!request.payload) return next();
 
-        const { response_type, send_raw_response, status_code } = request.payload;
-        const payload = send_raw_response ? request.payload.payload : request.payload;
-
-        return response.status(status_code).type(response_type).send(payload);
+        const { status_code } = request.payload;
+        return response.status(status_code).json(request.payload)
     },
 
     setup_request(request, response, next) {

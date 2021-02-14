@@ -9,7 +9,6 @@ const SampleSchema = new Schema({
         type: Number,
         required: true,
         default: 0,
-        unique: true,
     },
     compound_index_a: {
         type: String,
