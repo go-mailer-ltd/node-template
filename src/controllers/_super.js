@@ -41,11 +41,7 @@ class SuperController {
     }
 
     async get_record_metadata (model, _id, time_stamp) {
-<<<<<<< HEAD
         const n = (await model.estimatedDocumentCount({ time_stamp: { $lt: time_stamp } })) + 1;
-=======
-        const n = (await model.countDocuments({ time_stamp: { $lt: time_stamp } })) + 1;
->>>>>>> 85c5c88325d721956af4bf751a9d973d11968f7b
         await model.updateOne({ _id }, { id: n });
         return n;
     }

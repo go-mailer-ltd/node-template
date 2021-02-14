@@ -3,7 +3,6 @@
 **/
 //
 const RootService = require('../_root');
-const Observable = require('../../utilities/observable');
 const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../schemas/sample');
 
