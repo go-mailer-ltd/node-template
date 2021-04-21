@@ -5,41 +5,41 @@ require('dotenv').config();
 const { NODE_ENV } = process.env;
 
 /** MORGAN */
-const { createWriteStream } = require('fs');
-const { resolve } = require('path');
+let { createWriteStream } = require('fs');
+let { resolve } = require('path');
 
-const morgan = require('morgan');
-const dev_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version | :status :response-time ms'
-const prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version :referrer - :user-agent | :status :response-time ms'
-const morgan_format = NODE_ENV === 'production' ? prod_format : dev_format;
+let morgan = require('morgan');
+let dev_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version | :status :response-time ms'
+let prod_format = '[:date[web] :remote-addr :remote-user ] :method :url HTTP/:http-version :referrer - :user-agent | :status :response-time ms'
+let morgan_format = NODE_ENV === 'production' ? prod_format : dev_format;
 
-const request_log_stream = createWriteStream(resolve(__dirname, `../../logs/request.log`), { flags: 'a' });
+let request_log_stream = createWriteStream(resolve(__dirname, `../../logs/request.log`), { flags: 'a' });
 exports.morgan = morgan(morgan_format, { stream: request_log_stream });
 
 /** WINSTON */
-const {
+let {
     createLogger,
     format,
     transports,
 } = require('winston');
 
-const {
+let {
     colorize,
     combine,
     printf,
     timestamp,
 } = format
 
-const log_transports = {
+let log_transports = {
     console: new transports.Console({ level: 'warn' }),
     combined_log: new transports.File({ level: 'info', filename: `logs/combined.log` }),
     error_log: new transports.File({ level: 'error', filename: `logs/error.log` }),
     exception_log: new transports.File({ filename: 'logs/exception.log' }),
 };
 
-const log_format = printf(({ level, message, timestamp }) => `[${timestamp} : ${level}] - ${message}`);
+let log_format = printf(({ level, message, timestamp }) => `[${timestamp} : ${level}] - ${message}`);
 
-const logger = createLogger({
+let logger = createLogger({
     transports: [
         log_transports.console,
         log_transports.combined_log,

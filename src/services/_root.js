@@ -2,8 +2,8 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
-const appEvent = require('../events/_config');
-const { build_query } = require('../utilities/query');
+let appEvent = require('../events/_config');
+let { buildQuery } = require('../utilities/query');
 
 class RootService {
     constructor() {
@@ -13,30 +13,17 @@ class RootService {
         }
     }
 
-    delete_record_metadata(record) {
-        let record_to_mutate = { ...record };
-
-        //
-        delete record_to_mutate.timestamp;
-        delete record_to_mutate.created_on;
-        delete record_to_mutate.updated_on;
-        delete record_to_mutate._v;
-
-        //
-        return { ...record_to_mutate };
-    }
-
-    async handle_database_read(Controller, query_options, extra_options = {}) {
-        const {
+    async handleDatabaseRead(Controller, query_options, extra_options = {}) {
+        let {
             count,
             fields_to_return,
             limit,
             seek_conditions,
             skip,
             sort_condition,
-        } = build_query(query_options);
+        } = buildQuery(query_options);
 
-        return await Controller.read_records(
+        return await Controller.readRecords(
             { ...seek_conditions, ...extra_options, },
             fields_to_return,
             sort_condition,
@@ -46,57 +33,55 @@ class RootService {
         );
     }
 
-    process_single_read(result) {
-        if (result && result.id) return this.process_successful_response(result);
-        return this.process_failed_response(`Resource not found`, 404);
+    processSingleRead(result) {
+        if (result && result.id) return this.processSuccessfulResponse(result);
+        return this.processFailedResponse(`Resource not found`, 404);
     }
 
-    process_multiple_read_results(result) {
-        if (result && (result.count || result.length >= 0)) return this.process_successful_response(result);
-        return this.process_failed_response(`Resources not found`, 404);
+    processMultipleReadResults(result) {
+        if (result && (result.count || result.length >= 0)) return this.processSuccessfulResponse(result);
+        return this.processFailedResponse(`Resources not found`, 404);
     }
 
-    process_update_result(result, event_name) {
+    processUpdateResult(result, event_name) {
         if (result && result.ok && result.nModified) {
             if (event_name) {
                 appEvent.emit(event_name, result);
             }
-            return this.process_successful_response(result);
+            return this.processSuccessfulResponse(result);
         }
-        if (result && result.ok && !result.nModified) return this.process_successful_response(result, 210);
-        return this.process_failed_response(`Update failed`, 200);
+        if (result && result.ok && !result.nModified) return this.processSuccessfulResponse(result, 210);
+        return this.processFailedResponse(`Update failed`, 200);
     }
 
-    process_delete_result(result) {
-        if (result && result.nModified) return this.process_successful_response(result);
-        return this.process_failed_response(`Deletion failed.`, 200);
+    processDeleteResult(result) {
+        if (result && result.nModified) return this.processSuccessfulResponse(result);
+        return this.processFailedResponse(`Deletion failed.`, 200);
     }
 
     /** */
 
-    process_failed_response(message, code = 400) {
+    processFailedResponse(message, code = 400) {
         return {
             error: message,
             payload: null,
             status_code: code,
-            success: false,
         }
     }
 
-    process_successful_response(payload, code = 200, send_raw_response = false, response_type = 'application/json') {
+    processSuccessfulResponse(payload, code = 200, send_raw_response = false, response_type = 'application/json') {
         return {
             payload,
             error: null,
             response_type,
             send_raw_response,
             status_code: code,
-            success: true,
         }
     }
 
     /** */
-    validate_email(raw_email) {
-        const email = raw_email.trim();
+    validateEmail(raw_email) {
+        let email = raw_email.trim();
         if (email.length < 6) {
             return {
                 is_valid: false,
@@ -104,8 +89,8 @@ class RootService {
             }
         }
 
-        const email_pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        const is_valid = email_pattern.test(email);
+        let email_pattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let is_valid = email_pattern.test(email);
 
         return {
             is_valid,

@@ -7,8 +7,8 @@ const SampleController = require('../../controllers/sample');
 const SampleSchema = require('../../validators/sample');
 
 const {
-    build_query,
-    build_wildcard_options
+    buildQuery,
+    buildWildcardOptions,
 } = require('../../utilities/query');
 
 class SampleService extends RootService {
@@ -22,7 +22,7 @@ class SampleService extends RootService {
         this.sample_controller = sample_controller;
     }
 
-    async create_record(request, next) {
+    async createRecord(request, next) {
         try {
             const { body } = request;
             const { error } = SampleSchema.validate(body);
@@ -30,109 +30,110 @@ class SampleService extends RootService {
             if (error) throw new Error(error);
 
             delete body.id;
-            const result = await this.sample_controller.create_record({ ...body });
-            return this.process_single_read(result);
+            const result = await this.sample_controller.createRecord({ ...body });
+            return this.processSingleRead(result);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] created_record: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] created_record: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async read_record_by_id(request, next) {
+    async readRecordById(request, next) {
         try {
             const { id } = request.params;
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.processFailedResponse(`Invalid ID supplied.`));
 
-            const result = await this.sample_controller.read_records({ id, is_active: true });
-            return this.process_single_read(result[0]);
+            const result = await this.sample_controller.readRecords({ id, is_active: true });
+            return this.processSingleRead(result[0]);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] update_record_by_id: ${e.message}`, 500);
             return next(err);
         }
     }
 
-    async read_records_by_filter(request, next) {
+    async readRecordsByFilter(request, next) {
         try {
             const { query } = request;
 
-            const result = await this.handle_database_read(this.sample_controller, query);
-            return this.process_multiple_read_results(result);
+            const result = await this.handleDatabaseRead(this.sample_controller, query);
+            return this.processMultipleReadResults(result);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] read_records_by_filter: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] read_records_by_filter: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async read_records_by_wildcard(request, next) {
+    async readRecordsByWildcard(request, next) {
         try {
             const { params, query } = request;
 
             if (!params.keys || !params.keys) {
-                return next(this.process_failed_response(`Invalid key/keyword`, 400));
+                return next(this.processFailedResponse(`Invalid key/keyword`, 400));
             }
 
-            const wildcard_conditions = build_wildcard_options(params.keys, params.keyword);
-            const result = await this.handle_database_read(this.sample_controller, query, wildcard_conditions);
-            return this.process_multiple_read_results(result);
+            const wildcard_conditions = buildWildcardOptions(params.keys, params.keyword);
+            const result = await this.handleDatabaseRead(this.sample_controller, query, wildcard_conditions);
+            return this.processMultipleReadResults(result);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] read_records_by_wildcard: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] read_records_by_wildcard: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async update_record_by_id(request, next) {
+    async updateRecordById(request, next) {
         try {
             const { id } = request.params;
             const data = request.body;
 
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.processFailedResponse(`Invalid ID supplied.`));
 
-            const result = await this.sample_controller.update_records({ id }, { ...data });
-            return this.process_update_result(result);
+            const result = await this.sample_controller.updateRecords({ id }, { ...data });
+            return this.processUpdateResult(result);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] update_record_by_id: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] update_record_by_id: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async update_records(request, next) {
+    async updateRecords(request, next) {
         try {
             const { options, data } = request.body;
-            const { seek_conditions } = build_query(options);
+            const { seek_conditions } = buildQuery(options);
 
-            const result = await this.sample_controller.update_records({ ...seek_conditions }, { ...data });
-            return this.process_update_result({ ...data, ...result });
+            const result = await this.sample_controller.updateRecords({ ...seek_conditions }, { ...data });
+            return this.processUpdateResult({ ...data, ...result });
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] update_records: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] update_records: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async delete_record_by_id(request, next) {
+    async deleteRecordById(request, next) {
         try {
             const { id } = request.params;
-            if (!id) return next(this.process_failed_response(`Invalid ID supplied.`));
+            if (!id) return next(this.processFailedResponse(`Invalid ID supplied.`));
 
-            const result = await this.sample_controller.delete_records({ id });
-            return this.process_delete_result(result);
+            const result = await this.sample_controller.deleteRecords({ id });
+            return this.processDeleteResult(result);
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] delete_record_by_id: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] delete_record_by_id: ${e.message}`, 500);
             next(err);
         }
     }
 
-    async delete_records(request, next) {
+    async deleteRecords(request, next) {
         try {
             const { options } = request.body;
-            const { seek_conditions } = build_query(options);
+            const { seek_conditions } = buildQuery(options);
 
-            const result = await this.sample_controller.delete_records({ ...seek_conditions });
-            return this.process_delete_result({ ...result });
+            const result = await this.sample_controller.deleteRecords({ ...seek_conditions });
+            return this.processDeleteResult({ ...result });
         } catch (e) {
-            const err = this.process_failed_response(`[SampleService] delete_records: ${e.message}`, 500);
+            const err = this.processFailedResponse(`[SampleService] delete_records: ${e.message}`, 500);
             next(err);
         }
     }
 }
 
-module.exports = new SampleService(SampleController);
+let sampleController = new SampleController('Sample');
+module.exports = new SampleService(sampleController);
