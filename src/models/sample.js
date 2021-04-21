@@ -2,9 +2,8 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
-const { model, Schema } = require('mongoose');
-
-const SampleSchema = new Schema({
+let { model, Schema } = require('mongoose');
+let SampleSchema = new Schema({
     id: {
         type: Number,
         required: true,
@@ -46,9 +45,4 @@ const SampleSchema = new Schema({
     },
 });
 
-const Sample = module.exports = model('Sample', SampleSchema);
-
-// /** Create Indexes */
-// Sample.ensureIndexes({ time_stamp: -1 }); // single descending
-// Sample.ensureIndexes({ id: 1 }, { unique: true }); // single unique
-// Sample.ensureIndexes({ compound_index_a: 1, compound_index_b: 1 }, { unique: true }); // compound unique
+model('Sample', SampleSchema);
