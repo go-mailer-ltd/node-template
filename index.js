@@ -11,6 +11,7 @@ const {
 /** Database Conneciton Setup */
 const database = require('./src/models/_config');
 database.connect();
+require('./src/controllers/_config'); // load models
 
 /** Routes Configuration */
 const route_handler = require('./src/routes/_config');
@@ -38,7 +39,7 @@ app.use(morgan)
 /** Route Middleware */
 app.use('/', route_handler);
 
-/** Load Event files */
+/** Load setup files */
 require('./src/events/_loader');
 
 /** */

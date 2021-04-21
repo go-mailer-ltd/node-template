@@ -1,31 +1,54 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
-const SuperController = require('./_super');
+const mongoose = require('mongoose');
 
-class SampleController extends SuperController {
-    constructor() {
-        super();
+/** */
+class Controller {
+    constructor (model_name) {
+        this.model = mongoose.model(model_name);
+    }
+    
+    deleteRecordMetadata (record) {
+        let record_to_mutate = { ...record };
 
-        /** */
-        this.model = this.get_model('Sample');
+        //
+        delete record_to_mutate.timestamp;
+        delete record_to_mutate.created_on;
+        delete record_to_mutate.updated_on;
+        delete record_to_mutate._v;
+
+        //
+        return { ...record_to_mutate };
     }
 
-    async create_record(data) {
+    jsonize(data) {
+        return JSON.parse(JSON.stringify(data))
+    }
+
+    async setUniqueKey (model, _id, time_stamp) {
+        const n = (await model.estimatedDocumentCount({ time_stamp: { $lt: time_stamp } })) + 1;
+        await model.updateOne({ _id }, { id: n });
+        return n;
+    }
+
+    /** */
+
+    async createRecord(data) {
         try {
             const record_to_create = new this.model({ ...data });
             const created_record = await record_to_create.save();
 
             return {
                 ...this.jsonize(created_record),
-                id: await this.get_record_metadata(this.model, created_record._id, created_record.time_stamp),
+                id: await this.setUniqueKey(this.model, created_record._id, created_record.time_stamp),
             };
         } catch (e) {
             console.log(`[SampleController] create_record Error: ${e.message}`);
         }
     }
 
-    async read_records(conditions, fields_to_return = '', sort_options = '', count = false, skip = 0, limit = Number.MAX_SAFE_INTEGER) {
+    async readRecords(conditions, fields_to_return = '', sort_options = '', count = false, skip = 0, limit = Number.MAX_SAFE_INTEGER) {
         try {
             let result = null;
             if (count) {
@@ -48,9 +71,9 @@ class SampleController extends SuperController {
         }
     }
 
-    async update_records(conditions, data) {
+    async updateRecords(conditions, data) {
         try {
-            const data_to_set = this.delete_record_metadata(data);
+            const data_to_set = this.deleteRecordMetadata(data);
             const result = await this.model.updateMany({
                 ...conditions
             }, {
@@ -64,7 +87,7 @@ class SampleController extends SuperController {
         }
     }
 
-    async delete_records(conditions) {
+    async deleteRecords(conditions) {
         try {
             const result = await this.model.updateMany({
                 ...conditions,
@@ -81,4 +104,4 @@ class SampleController extends SuperController {
     }
 }
 
-module.exports = new SampleController();
+module.exports = Controller;
