@@ -4,7 +4,7 @@
 const { logger } = require('../utilities/logger');
 
 module.exports = {
-    handle_404(request, response, next) {
+    handle404(request, response, next) {
         const return_data = {
             status_code: 404,
             error: `Resource not found`,
@@ -14,7 +14,7 @@ module.exports = {
         next(return_data);
     },
 
-    handle_error(error, request, response, next) {
+    handleError(error, request, response, next) {
 
         // Log errors
         logger.error(error.error || error.message);
@@ -28,14 +28,14 @@ module.exports = {
     },
 
 
-    process_response(request, response, next) {
+    processResponse(request, response, next) {
         if (!request.payload) return next();
 
         const { status_code } = request.payload;
         return response.status(status_code).json(request.payload)
     },
 
-    setup_request(request, response, next) {
+    setupRequest(request, response, next) {
         request.headers['access-control-allow-origin'] = '*';
         request.headers['access-control-allow-headers'] = '*';
 

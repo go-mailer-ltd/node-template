@@ -2,8 +2,8 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 
-const router = require('express').Router();
-const {
+let router = require('express').Router();
+let {
     handle_404,
     handle_error,
     setup_request,
@@ -11,7 +11,7 @@ const {
 } = require('../middlewares/http');
 
 /** Route Handlers */
-const sample_route_handler = require('./sample');
+let sample_route_handler = require('./sample');
 
 /** Cross Origin Handling */
 router.use(setup_request);

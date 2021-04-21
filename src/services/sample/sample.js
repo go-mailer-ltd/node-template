@@ -4,7 +4,7 @@
 //
 const RootService = require('../_root');
 const SampleController = require('../../controllers/sample');
-const SampleSchema = require('../../schemas/sample');
+const SampleSchema = require('../../validators/sample');
 
 const {
     build_query,
