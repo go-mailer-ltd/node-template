@@ -3,7 +3,7 @@
 **/
 //
 const RootService = require('../_root');
-const SampleController = require('../../controllers/sample');
+const Controller = require('../../controllers');
 const SampleSchema = require('../../validators/sample');
 
 const {
@@ -135,5 +135,4 @@ class SampleService extends RootService {
     }
 }
 
-let sampleController = new SampleController('Sample');
 module.exports = new SampleService(sampleController);

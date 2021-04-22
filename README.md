@@ -3,7 +3,6 @@ This is a flexible, and generic node.js/express template which covers most basic
 
 ### DEPENDENCIES
 The template comes with the following dependencies defined:
-* `body-parser` - `https://github.com/expressjs/body-parser#readme`
 * `compression` - `https://github.com/expressjs/compression#readme`
 * `cors` - `https://github.com/expressjs/cors#readme`
 * `dotenv` - `https://github.com/motdotla/dotenv#readme`
