@@ -1,15 +1,15 @@
 /** */
 
-exports.buildQuery = options => {
+const buildQuery = options => {
     let seek_conditions = {};
-    const sort_condition = options.sort_by ? this.buildSortOrderString(options.sort_by) : '';
-    const fields_to_return = options.return_only ? this.buildReturnFieldsString(options.return_only) : '';
+    const sort_condition = options.sort_by ? buildSortOrderString(options.sort_by) : '';
+    const fields_to_return = options.return_only ? buildReturnFieldsString(options.return_only) : '';
     const count = options.count || false;
 
     let skip = 0, limit = Number.MAX_SAFE_INTEGER;
     
     if (options.page && options.population) {
-        const pagination = this.determinePagination(options.page, options.population);
+        const pagination = determinePagination(options.page, options.population);
         limit = pagination.limit;
         skip = pagination.skip;
     }
@@ -26,13 +26,13 @@ exports.buildQuery = options => {
         let condition;
 
         if (field_value.includes(':')) {
-            condition = this.buildInQuery(field_value);
+            condition = buildInQuery(field_value);
         } else if (field_value.includes('!')) {
-            condition = this.buildNorQuery(field_value);
+            condition = buildNorQuery(field_value);
         } else if (field_value.includes('~')) {
-            condition = this.buildRangeQuery(field_value);
+            condition = buildRangeQuery(field_value);
         } else {
-            condition = this.buildOrQuery(field_value);
+            condition = buildOrQuery(field_value);
         }
 
         seek_conditions[field] = { ...condition };
@@ -48,7 +48,7 @@ exports.buildQuery = options => {
     }
 }
 
-exports.buildInQuery = value => {
+const buildInQuery = value => {
     const values = value.split(':');
     return {
         $in: [
@@ -57,7 +57,7 @@ exports.buildInQuery = value => {
     };
 }
 
-exports.buildNorQuery = value => {
+const buildNorQuery = value => {
     const values = value.split('!');
     return {
         $nin: [
@@ -66,7 +66,7 @@ exports.buildNorQuery = value => {
     }
 }
 
-exports.buildOrQuery = value => {
+const buildOrQuery = value => {
     const values = value.split(',');
     return {
         $in: [
@@ -75,25 +75,23 @@ exports.buildOrQuery = value => {
     };
 }
 
-exports.buildRangeQuery = value => {
-    const values = value.split('-');
+const buildRangeQuery = value => {
+    const values = value.split('~');
     return {
         $gte: values[0] ? Number(values[0]) : Number.MIN_SAFE_INTEGER,
         $lte: values[1] ? Number(values[1]) : Number.MAX_SAFE_INTEGER,
     };
 }
 
-exports.buildReturnFieldsString = value => {
-    const fields = value.split(',');
-    return fields.join(' ');
+const buildReturnFieldsString = value => {
+    return value.replace(/,/gi, ' ');
 }
 
-exports.buildSortOrderString = value => {
-    const values = value.split(',');
-    return values.join(' ');
+const buildSortOrderString = value => {
+    return value.replace(/,/gi, ' ');
 }
 
-exports.buildWildcardOptions = (key_list, value) => {
+const buildWildcardOptions = (key_list, value) => {
     const keys = key_list.split(',');
     return {
         $or: keys.map((key) => ({
@@ -105,10 +103,21 @@ exports.buildWildcardOptions = (key_list, value) => {
     };
 }
 
-exports.determinePagination = (page, population) => {
+const determinePagination = (page, population) => {
     return{
         limit: Number(population),
         skip: page * population,
     }
 }
 
+module.exports = {
+    buildInQuery,
+    buildNorQuery,
+    buildOrQuery,
+    buildQuery,
+    buildRangeQuery,
+    buildReturnFieldsString,
+    buildSortOrderString,
+    buildWildcardOptions,
+    determinePagination,
+}
