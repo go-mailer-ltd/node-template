@@ -94,8 +94,12 @@ describe("Tests Query utility", () => {
         const options = {
             firstname: 'matt,nate',
             lastname: '!David',
+            age: "13:15:67",
+            score: "50~100",
             sort_by: '-firstname',
             return_only: 'firstname,lastname',
+            page: 0,
+            population: 100,
         }
 
 

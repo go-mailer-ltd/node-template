@@ -8,7 +8,7 @@ const buildQuery = options => {
 
     let skip = 0, limit = Number.MAX_SAFE_INTEGER;
     
-    if (options.page && options.population) {
+    if (options.page >= 0 && options.population) {
         const pagination = determinePagination(options.page, options.population);
         limit = pagination.limit;
         skip = pagination.skip;
