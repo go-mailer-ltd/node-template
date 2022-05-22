@@ -15,7 +15,6 @@ class RootService {
 
     async handleDatabaseRead(Controller, query_options, extra_options = {}) {
         let {
-            count,
             fields_to_return,
             limit,
             seek_conditions,
@@ -27,7 +26,6 @@ class RootService {
             { ...seek_conditions, ...extra_options, },
             fields_to_return,
             sort_condition,
-            count || false,
             skip,
             limit
         );
@@ -39,7 +37,7 @@ class RootService {
     }
 
     processMultipleReadResults(result) {
-        if (result && (result.count || result.length >= 0)) return this.processSuccessfulResponse(result);
+        if (result && result.data) return this.processSuccessfulResponse(result);
         return this.processFailedResponse(`Resources not found`, 404);
     }
 

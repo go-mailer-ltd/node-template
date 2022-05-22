@@ -7,9 +7,9 @@ exports.buildQuery = options => {
     const count = options.count || false;
 
     let skip = 0, limit = Number.MAX_SAFE_INTEGER;
-    
-    if (options.page && options.population) {
-        const pagination = this.determinePagination(options.page, options.population);
+
+    if (options.page >= 0 && options.population) {
+        const pagination = determinePagination(options.page, options.population);
         limit = pagination.limit;
         skip = pagination.skip;
     }
@@ -76,10 +76,10 @@ exports.buildOrQuery = value => {
 }
 
 exports.buildRangeQuery = value => {
-    const values = value.split('-');
+    const [min, max] = value.split('~');
     return {
-        $gte: values[0] ? Number(values[0]) : Number.MIN_SAFE_INTEGER,
-        $lte: values[1] ? Number(values[1]) : Number.MAX_SAFE_INTEGER,
+        $gte: min ? Number(min) : Number.MIN_SAFE_INTEGER,
+        $lte: max ? Number(max) : Number.MAX_SAFE_INTEGER,
     };
 }
 
@@ -95,18 +95,19 @@ exports.buildSortOrderString = value => {
 
 exports.buildWildcardOptions = (key_list, value) => {
     const keys = key_list.split(',');
+
     return {
         $or: keys.map((key) => ({
-                [key]: {
-                    $regex : `${value}`,
-                    $options: 'i',
-                },
+            [key]: {
+                $regex: value || '',
+                $options: 'i',
+            },
         })),
     };
 }
 
-exports.determinePagination = (page, population) => {
-    return{
+const determinePagination = (page, population) => {
+    return {
         limit: Number(population),
         skip: page * population,
     }

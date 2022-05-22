@@ -1,24 +1,23 @@
 /**
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
-require('dotenv').config();
 let glob = require('glob');
 let { resolve } = require('path');
 
 const {
-    APP_DB_URI
-} = process.env;
+    app_db_uri
+} = require('../../config')
 
 let mongoose = require('mongoose');
 
 module.exports.connect = () => {
     try {
 
-        mongoose.connect(APP_DB_URI, {
+        mongoose.connect(app_db_uri, {
             autoIndex: false,
             useNewUrlParser: true,
             useUnifiedTopology: true,
-        }, (err, data) => {
+        }, (err, __) => {
             if (err) {
                 console.log(`Could not connect to database`);
                 return;

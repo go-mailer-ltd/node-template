@@ -2,21 +2,22 @@
  * @author Oguntuberu Nathan O. <nateoguns.work@gmail.com>
 **/
 const mongoose = require('mongoose');
-
+const { app_logger } = require('../utilities/logger');
 /** */
 class Controller {
-    constructor (model_name) {
+    constructor(model_name) {
+        this.logger = app_logger(`${model_name} Controller`);
         this.model = mongoose.model(model_name);
     }
-    
-    deleteRecordMetadata (record) {
+
+    deleteRecordMetadata(record) {
         let record_to_mutate = { ...record };
 
         //
-        delete record_to_mutate.timestamp;
+        delete record_to_mutate.time_stamp;
         delete record_to_mutate.created_on;
         delete record_to_mutate.updated_on;
-        delete record_to_mutate._v;
+        delete record_to_mutate.__v;
 
         //
         return { ...record_to_mutate };
@@ -26,7 +27,7 @@ class Controller {
         return JSON.parse(JSON.stringify(data))
     }
 
-    async setUniqueKey (model, _id, time_stamp) {
+    async setUniqueKey(model, _id, time_stamp) {
         const n = (await model.estimatedDocumentCount({ time_stamp: { $lt: time_stamp } })) + 1;
         await model.updateOne({ _id }, { id: n });
         return n;
@@ -44,30 +45,32 @@ class Controller {
                 id: await this.setUniqueKey(this.model, created_record._id, created_record.time_stamp),
             };
         } catch (e) {
-            console.log(`[SampleController] create_record Error: ${e.message}`);
+            this.logger.error(e.message, 'createRecord');
         }
     }
 
-    async readRecords(conditions, fields_to_return = '', sort_options = '', count = false, skip = 0, limit = Number.MAX_SAFE_INTEGER) {
+    async readRecords(conditions, fields_to_return = '', sort_options = '', skip = 0, limit = Number.MAX_SAFE_INTEGER) {
         try {
             let result = null;
-            if (count) {
-                result = await this.model.countDocuments({ ...conditions })
+
+            result = await Promise.all([
+                this.model.countDocuments({ ...conditions }),
+                this.model.find({ ...conditions }, fields_to_return)
                     .skip(skip)
                     .limit(limit)
-                    .sort(sort_options);
-                return {
-                    count: result,
-                };
-            } else {
-                result = await this.model.find({ ...conditions }, fields_to_return)
-                    .skip(skip)
-                    .limit(limit)
-                    .sort(sort_options);
-                return this.jsonize([...result]);
-            }
+                    .sort(sort_options)
+            ]);
+            const [count, records] = result;
+            return this.jsonize({
+                data: records,
+                meta: {
+                    size: count,
+                    next_page: skip + 1
+                }
+            });
         } catch (e) {
-            console.log(`[SampleController] read_records: ${e.message}`);
+            console.log(e)
+            this.logger.error(e.message, 'readRecords');
         }
     }
 
@@ -83,7 +86,7 @@ class Controller {
 
             return this.jsonize({ ...result, data });
         } catch (e) {
-            console.log(`[SampleController] update_records Error: ${e.message}`);
+            this.logger.error(e.message, 'updateRecords');
         }
     }
 
@@ -99,7 +102,7 @@ class Controller {
 
             return this.jsonize(result);
         } catch (e) {
-            console.log(`[SampleController] delete_records Error: ${e.message}`);
+            this.logger.error(e.message, 'deleteRecords');
         }
     }
 }

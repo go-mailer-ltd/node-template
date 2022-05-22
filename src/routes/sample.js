@@ -3,39 +3,40 @@
 **/
 
 const router = require('express').Router();
-const sample_service = require('../services/sample/sample');
+const sampleService = require('../services/sample');
+
 try {
     router
-    .post('/', async (request, response, next) => {
-        request.payload = await sample_service.create_record(request, next);
+    .post('/', async (request, __, next) => {
+        request.payload = await sampleService.createRecord(request, next);
         next();
     })
-    .get('/', async (request, response, next) => {
-        request.payload = await sample_service.read_records_by_filter(request, next);
+    .get('/', async (request, __, next) => {
+        request.payload = await sampleService.readRecordsByFilter(request, next);
         next();
     })
-    .get('/:id', async (request, response, next) => {
-        request.payload = await sample_service.read_record_by_id(request, next);
+    .get('/:id', async (request, __, next) => {
+        request.payload = await sampleService.readRecordById(request, next);
         next();
     })
-    .get('/search/:keys/:keyword', async (request, response, next) => {
-        request.payload = await sample_service.read_records_by_wildcard(request, next);
+    .get('/search/:fields', async (request, __, next) => {
+        request.payload = await sampleService.readRecordsByWildcard(request, next);
         next();
     })
-    .put('/:id', async (request, response, next) => {
-        request.payload = await sample_service.update_record_by_id(request, next);
+    .put('/:id', async (request, __, next) => {
+        request.payload = await sampleService.updateRecordById(request, next);
         next();
     })
-    .put('/', async (request, response, next) => {
-        request.payload = await sample_service.update_records(request, next);
+    .put('/', async (request, __, next) => {
+        request.payload = await sampleService.updateRecords(request, next);
         next();
     })
-    .delete('/:id', async (request, response, next) => {
-        request.payload = await sample_service.delete_record_by_id(request, next);
+    .delete('/:id', async (request, __, next) => {
+        request.payload = await sampleService.deleteRecordById(request, next);
         next();
     })
-    .delete('/', async (request, response, next) => {
-        request.payload = await sample_service.delete_records(request, next);
+    .delete('/', async (request, __, next) => {
+        request.payload = await sampleService.deleteRecords(request, next);
         next();
     })
 } catch (e) {
