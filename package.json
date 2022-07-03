@@ -38,7 +38,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint-fix": "eslint --fix ./*.js",
+    "lint": "eslint ./src  --ext .js",
+    "lint-fix": "eslint --fix ./src  --ext .js",
     "test": "nyc mocha --recursive -w -c || true"
   },
   "repository": {
